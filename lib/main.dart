@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-
+import 'package:pos/app/data/database/database_pos.dart';
 import 'app/routes/app_pages.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseHelper.instance.database;
   runApp(
     GetMaterialApp(
       debugShowCheckedModeBanner: false,

@@ -72,8 +72,11 @@ class LoginView extends GetView<LoginController> {
                 height: 12,
               ),
               CustomButton(
+                isLoading: controller.isLoading.value,
                 text: "Connecter",
-                onPressed: () {},
+                onPressed: () {
+                  controller.login();
+                },
               ),
               SizedBox(
                 height: 6,
