@@ -2,29 +2,30 @@ class User {
   final int? id;
   final String username;
   final String password;
+  final String status;
+
   User({
     this.id,
     required this.username,
     required this.password,
+    this.status = "cashier",
   });
 
-
   Map<String, dynamic> toMap() {
-    final map = <String, dynamic>{
+    return {
+      'id': id,
       'username': username,
       'password': password,
+      'status': status,
     };
-    if (id != null) {
-      map['id'] = id;
-    }
-    return map;
   }
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      id: map['id'] as int?,
-      username: map['username'] as String,
-      password: map['password'] as String,
+      id: map['id'],
+      username: map['username'],
+      password: map['password'],
+      status: map['status'],
     );
   }
 }
