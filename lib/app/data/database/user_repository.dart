@@ -4,7 +4,6 @@ import 'package:pos/app/models/user.dart';
 
 class UserRepository {
   final dbProvider = DatabaseHelper.instance;
-
   Future<int> insertUser(User user) async {
     final db = await dbProvider.database;
     String hashedPassword = BCrypt.hashpw(user.password, BCrypt.gensalt());
@@ -35,7 +34,7 @@ class UserRepository {
     );
   }
 
-  Future<int> deleteUserByModel(User user) async {
+  Future<int> deleteUser(User user) async {
     final db = await dbProvider.database;
     if (user.id == null) {
       throw Exception("L'utilisateur doit avoir un id pour être supprimé");
