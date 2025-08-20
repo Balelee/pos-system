@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
+import 'package:pos/app/models/user.dart';
 
 class HomeController extends GetxController {
-  //TODO: Implement HomeController
 
-  final count = 0.obs;
+   final User? user = Get.arguments;
+
   @override
   void onInit() {
     super.onInit();
@@ -19,5 +20,4 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
-  void increment() => count.value++;
 }

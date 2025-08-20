@@ -1,18 +1,35 @@
 import 'package:bcrypt/bcrypt.dart';
 import 'package:pos/app/data/database/database_pos.dart';
 import 'package:pos/app/models/user.dart';
+import 'package:sqflite/sqflite.dart';
 
 class UserRepository {
   final dbProvider = DatabaseHelper.instance;
-  Future<int> insertUser(User user) async {
+ Future<User?> insertUser(User user) async {
     final db = await dbProvider.database;
     String hashedPassword = BCrypt.hashpw(user.password, BCrypt.gensalt());
     final userToInsert = User(
       username: user.username,
       password: hashedPassword,
     );
-    return await db.insert('users', userToInsert.toMap());
+    try {
+      final id = await db.insert(
+        'users',
+        userToInsert.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      return User(
+        id: id,
+        username: userToInsert.username,
+        password: userToInsert.password,
+        status: userToInsert.status,
+      );
+    } catch (e) {
+      print("Erreur lors de l'insertion de l'utilisateur : $e");
+      return null;
+    }
   }
+
 
   Future<List<User>> fetchUsers() async {
     final db = await dbProvider.database;

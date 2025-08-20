@@ -1,11 +1,9 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pos/app/data/components/bouton/bouton.dart';
 import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/data/components/textField/textField.dart';
-import 'package:pos/app/routes/app_pages.dart';
 import '../controllers/register_controller.dart';
 
 class RegisterView extends GetView<RegisterController> {
@@ -13,22 +11,21 @@ class RegisterView extends GetView<RegisterController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Obx(
-        () => Padding(
-          padding: const EdgeInsets.only(left: 30.0, right: 30),
+        () => SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ParagraphText(
-                text: "S'inscrire gratuitement",
+                text: "Ajouter un caissier",
                 type: ParagraphType.bodyText1,
               ),
               SizedBox(
                 height: 1,
               ),
               ParagraphText(
-                text:
-                    "Saisissez vos informations personnelles pour votre inscription",
+                text: "Saisissez les informations du caissier",
                 type: ParagraphType.bodyText2,
                 color: AppColor.bodyText2Color.withOpacity(0.5),
               ),
@@ -68,60 +65,15 @@ class RegisterView extends GetView<RegisterController> {
                 controller: controller.passwordController,
               ),
               SizedBox(
-                height: 8,
-              ),
-              CustomTextField(
-                prefixIcon: Icons.lock,
-                label: "Confirmer mot de passe",
-                hintText: "Ex:OOOYREdg",
-                obscureText: controller.obscureTextC.value,
-                hintStyle: TextStyle(
-                  color: AppColor.bodyText2Color.withOpacity(0.5),
-                  fontSize: 14,
-                ),
-                keyboardType: TextInputType.text,
-                suffixIcon: controller.obscureTextC.value
-                    ? Icons.visibility_off
-                    : Icons.visibility,
-                onSuffixPressed: () {
-                  controller.obscureTextC.value =
-                      !controller.obscureTextC.value;
-                },
-                controller: controller.CpasswordController,
-              ),
-              SizedBox(
                 height: 12,
               ),
               CustomButton(
+                isLoading: controller.isLoading.value,
                 text: "Enregistrer",
-                onPressed: () {},
+                onPressed: () {
+                  controller.register();
+                },
               ),
-              SizedBox(
-                height: 6,
-              ),
-              RichText(
-                text: TextSpan(
-                  style: TextStyle(color: Colors.black),
-                  children: [
-                    TextSpan(
-                      text: "Connectez-vous 👉",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    TextSpan(
-                      text: " Cliquez sur se connecter",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Get.toNamed(AppPages.LOGIN);
-                        },
-                    ),
-                  ],
-                ),
-              )
             ],
           ),
         ),

@@ -8,7 +8,7 @@ class User {
     this.id,
     required this.username,
     required this.password,
-    this.status = "cashier",
+    this.status = "admin",
   });
 
   Map<String, dynamic> toMap() {
@@ -16,7 +16,7 @@ class User {
       'id': id,
       'username': username,
       'password': password,
-      'status': status,
+      if (status.isNotEmpty) 'status': status,
     };
   }
 

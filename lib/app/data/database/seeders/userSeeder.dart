@@ -6,7 +6,7 @@ class UserSeeder {
     final users = await db.query('users');
     if (users.isEmpty) {
       // Admin
-      String adminPassword = BCrypt.hashpw('admin123', BCrypt.gensalt());
+      String adminPassword = BCrypt.hashpw('admin', BCrypt.gensalt());
       await db.insert('users', {
         'username': 'admin',
         'password': adminPassword,
