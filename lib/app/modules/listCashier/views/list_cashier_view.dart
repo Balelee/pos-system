@@ -4,6 +4,8 @@ import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/home/controllers/home_controller.dart';
+import 'package:pos/app/modules/register/controllers/register_controller.dart';
+import 'package:pos/app/modules/register/views/register_view.dart';
 
 class ListCashierView extends GetView<HomeController> {
   const ListCashierView({super.key});
@@ -70,8 +72,17 @@ class ListCashierView extends GetView<HomeController> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColor.bodyText2Color,
         onPressed: () {
-          // Ouvrir un bottom sheet ou une page pour ajouter un nouveau caissier
-          // controller.showAddCashierSheet();
+          Get.put(RegisterController());
+          Get.bottomSheet(
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: RegisterView(),
+            ),
+          );
         },
         child: const Icon(
           Icons.add,

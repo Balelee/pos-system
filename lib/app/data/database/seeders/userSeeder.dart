@@ -12,14 +12,6 @@ class UserSeeder {
         'password': adminPassword,
         'status': 'admin',
       });
-
-      // Caissier
-      String cashierPassword = BCrypt.hashpw('cashier', BCrypt.gensalt());
-      await db.insert('users', {
-        'username': 'aymard',
-        'password': cashierPassword,
-        'status': 'cashier',
-      });
     }
   }
 }

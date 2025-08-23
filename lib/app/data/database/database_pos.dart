@@ -30,11 +30,11 @@ class DatabaseHelper {
 
   Future _createDB(Database db, int version) async {
     // ─────────── Création des tables ───────────
-   await CreateUsersTable().up(db);
-   await CreateCategoryTable().up(db);
+    await CreateUsersTable().up(db);
+    await CreateCategoryTable().up(db);
     await CreateArticleTable().up(db);
 
     // ─────────── Seed initial data ───────────
-   DatabaseSeeder().run(db);
+    DatabaseSeeder().run(db);
   }
 }
