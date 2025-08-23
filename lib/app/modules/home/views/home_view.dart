@@ -4,6 +4,7 @@ import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/modules/register/controllers/register_controller.dart';
 import 'package:pos/app/modules/register/views/register_view.dart';
+import 'package:pos/app/routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 
 class StatCard extends StatelessWidget {
@@ -142,11 +143,26 @@ class HomeView extends GetView<HomeController> {
                     icon: Icons.monetization_on,
                     label: "Ventes du jour",
                     value: "50,000 FCFA"),
-                StatCard(
-                    icon: Icons.shopping_bag, label: "Produits", value: "125"),
+                if (controller.user?.status == 'admin')
+                  StatCard(
+                      icon: Icons.shopping_bag,
+                      label: "Produits",
+                      value: "125"),
                 StatCard(
                     icon: Icons.warning, label: "Stock faible", value: "8"),
-                StatCard(icon: Icons.people, label: "Caissiers", value: "12"),
+                if (controller.user?.status == 'admin')
+                  GestureDetector(
+                    child: Obx(
+                      () => StatCard(
+                        icon: Icons.people,
+                        label: "Caissiers",
+                        value: "${controller.userCashiers.length}",
+                      ),
+                    ),
+                    onTap: () {
+                      Get.toNamed(Routes.LIST_CASHIER);
+                    },
+                  ),
               ],
             ),
             SizedBox(height: 20),
@@ -155,14 +171,16 @@ class HomeView extends GetView<HomeController> {
             QuickAccessCard(icon: Icons.bar_chart, title: "Stocks"),
             QuickAccessCard(
                 icon: Icons.history, title: "Historique des ventes"),
-            QuickAccessCard(
-              icon: Icons.supervised_user_circle,
-              title: "Gestion des caissiers",
-              subTitles: {
-                "Ajouter un caissier": "bottomsheet",
-                // "Liste des caissiers": AppPages.CASHIER_LIST,
-              },
-            ),
+            QuickAccessCard(icon: Icons.history, title: "Paiements"),
+            if (controller.user?.status == 'admin')
+              QuickAccessCard(
+                icon: Icons.supervised_user_circle,
+                title: "Gestion des caissiers",
+                subTitles: {
+                  "Ajouter un caissier": "bottomsheet",
+                  // "Liste des caissiers": AppPages.CASHIER_LIST,
+                },
+              ),
             SizedBox(height: 20),
           ],
         ),

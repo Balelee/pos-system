@@ -2,13 +2,13 @@ class User {
   final int? id;
   final String username;
   final String password;
-  final String status;
+  final String? status;
 
   User({
     this.id,
     required this.username,
     required this.password,
-    this.status = "admin",
+    this.status,
   });
 
   Map<String, dynamic> toMap() {
@@ -16,7 +16,7 @@ class User {
       'id': id,
       'username': username,
       'password': password,
-      if (status.isNotEmpty) 'status': status,
+      'status': status,
     };
   }
 

@@ -5,12 +5,13 @@ import 'package:sqflite/sqflite.dart';
 
 class UserRepository {
   final dbProvider = DatabaseHelper.instance;
- Future<User?> insertUser(User user) async {
+  Future<User?> insertUser(User user) async {
     final db = await dbProvider.database;
     String hashedPassword = BCrypt.hashpw(user.password, BCrypt.gensalt());
     final userToInsert = User(
       username: user.username,
       password: hashedPassword,
+      status: user.status,
     );
     try {
       final id = await db.insert(
@@ -30,10 +31,19 @@ class UserRepository {
     }
   }
 
-
   Future<List<User>> fetchUsers() async {
     final db = await dbProvider.database;
     final result = await db.query('users');
+    return result.map((map) => User.fromMap(map)).toList();
+  }
+
+  Future<List<User>> fetchUsersCashier() async {
+    final db = await dbProvider.database;
+    final result = await db.query(
+      'users',
+      where: 'status = ?',
+      whereArgs: ['cashier'],
+    );
     return result.map((map) => User.fromMap(map)).toList();
   }
 

@@ -20,21 +20,24 @@ class LoginController extends GetxController {
         usernameController.text,
         passwordController.text,
       );
-      usernameController.clear();
-      passwordController.clear();
       if (user != null) {
-        Toast.toast(
-          title: Text("Connexion réussie"),
-          description: "Bienvenue, ${user.username}!",
-          type: ToastificationType.success,
-          style: ToastificationStyle.fillColored,
-          alignment: Alignment.topRight,
-        );
-        await Future.delayed(Duration(seconds: 3));
+        Future.delayed(Duration(seconds: 3), () {
+          Toast.toast(
+            title: Text("Connexion réussie"),
+            description: "Bienvenue, ${user.username}!",
+            type: ToastificationType.success,
+            style: ToastificationStyle.fillColored,
+            alignment: Alignment.topRight,
+          );
+        });
+
+        await Future.delayed(Duration(seconds: 5));
         Get.toNamed(
           AppPages.HOME,
           arguments: user,
         );
+        usernameController.clear();
+        passwordController.clear();
       } else {
         Toast.toast(
           title: Text("Identifiants incorrects"),
