@@ -1,3 +1,7 @@
+import 'package:pos/app/data/database/migrations/create_article_table.dart';
+import 'package:pos/app/data/database/migrations/create_category_table.dart';
+import 'package:pos/app/data/database/migrations/create_users_table.dart';
+import 'package:pos/app/data/database/seeders/database_seeder.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -25,12 +29,12 @@ class DatabaseHelper {
   }
 
   Future _createDB(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
-      )
-    ''');
+    // ─────────── Création des tables ───────────
+    await CreateUsersTable().up(db);
+    await CreateCategoryTable().up(db);
+    await CreateArticleTable().up(db);
+
+    // ─────────── Seed initial data ───────────
+    DatabaseSeeder().run(db);
   }
 }

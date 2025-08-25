@@ -1,12 +1,8 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/data/components/textField/textField.dart';
-import 'package:pos/app/routes/app_pages.dart';
-
 import '../../../data/components/bouton/bouton.dart';
 import '../controllers/login_controller.dart';
 
@@ -72,35 +68,12 @@ class LoginView extends GetView<LoginController> {
                 height: 12,
               ),
               CustomButton(
+                isLoading: controller.isLoading.value,
                 text: "Connecter",
-                onPressed: () {},
+                onPressed: () {
+                  controller.login();
+                },
               ),
-              SizedBox(
-                height: 6,
-              ),
-              RichText(
-                text: TextSpan(
-                  style: TextStyle(color: Colors.black),
-                  children: [
-                    TextSpan(
-                      text: "Inscrivez-vous 👉",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    TextSpan(
-                      text: " Cliquez sur s'incrire",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Get.toNamed(AppPages.REGISTER);
-                        },
-                    ),
-                  ],
-                ),
-              )
             ],
           ),
         ),
