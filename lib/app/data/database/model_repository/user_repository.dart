@@ -1,5 +1,6 @@
 import 'package:bcrypt/bcrypt.dart';
 import 'package:pos/app/data/database/database_pos.dart';
+import 'package:pos/app/models/session.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -79,9 +80,55 @@ class UserRepository {
     if (results.isNotEmpty) {
       final user = User.fromMap(results.first);
       if (BCrypt.checkpw(password, user.password)) {
+        await db.insert(
+          'sessions',
+          {
+            'user_id': user.id,
+            'login_time': DateTime.now().toIso8601String(),
+          },
+        );
         return user;
       }
     }
     return null;
   }
+
+  Future<void> logoutUser(int userId) async {
+    final db = await dbProvider.database;
+    await db.update(
+      'sessions',
+      {
+        'logout_time': DateTime.now().toIso8601String(),
+      },
+      where: 'user_id = ? AND logout_time IS NULL',
+      whereArgs: [userId],
+    );
+  }
+
+
+Future<List<Session>> fetchLastSessionCashiers() async {
+  final db = await dbProvider.database;
+  final usersResult = await db.query(
+    'users',
+    where: 'status = ?',
+    whereArgs: ['cashier'],
+  );
+  List<Session> sessions = [];
+  for (var userMap in usersResult) {
+    final user = User.fromMap(userMap);
+    final sessionResult = await db.query(
+      'sessions',
+      where: 'user_id = ?',
+      whereArgs: [user.id],
+      orderBy: 'login_time DESC',
+      limit: 1,
+    );
+    if (sessionResult.isNotEmpty) {
+      final session = Session.fromMap(sessionResult.first, user);
+      sessions.add(session);
+    }
+  }
+  return sessions;
+}
+
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pos/app/data/components/bouton/bouton.dart';
 import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/home/controllers/home_controller.dart';
 import 'package:pos/app/modules/register/controllers/register_controller.dart';
 import 'package:pos/app/modules/register/views/register_view.dart';
+import 'package:pos/app/widget/showDialog.dart';
 
 class ListCashierView extends GetView<HomeController> {
   const ListCashierView({super.key});
@@ -14,12 +16,20 @@ class ListCashierView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: ParagraphText(
-            text: "Mes caissiers",
-            type: ParagraphType.bodyText1,
-          ),
-          automaticallyImplyLeading: false,
-          backgroundColor: AppColor.bodyText2Color),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Get.back();
+          },
+        ),
+        title: ParagraphText(
+          text: "Mes caissiers",
+          type: ParagraphType.bodyText1,
+          color: Colors.white,
+        ),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.blue.shade400,
+      ),
       body: Obx(() {
         final cashiers = controller.userCashiers;
         if (cashiers.isEmpty) {
@@ -30,47 +40,76 @@ class ListCashierView extends GetView<HomeController> {
             ),
           );
         }
-
         return ListView.separated(
           padding: const EdgeInsets.all(12),
           itemCount: cashiers.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          separatorBuilder: (_, __) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final User cashier = cashiers[index];
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundColor: controller
+                    .avatarColors[index % controller.avatarColors.length],
+                child: Text(
+                  cashier.username[0].toUpperCase(),
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
-              elevation: 4,
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: AppColor.bodyText2Color,
-                  child: Text(
-                    cashier.username[0].toUpperCase(),
-                    style: const TextStyle(color: Colors.white),
-                  ),
+              title: Text(
+                cashier.username,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
                 ),
-                title: Text(
-                  cashier.username,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+              ),
+              subtitle: ParagraphText(
+                text: '${cashier.status?.label}',
+                type: ParagraphType.bodyText2,
+                color: Colors.green.shade400,
+              ),
+              trailing: IconButton(
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                  size: 20,
                 ),
-                subtitle: Text('Status: ${cashier.status}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    // Ajouter la fonction de suppression
-                    // controller.deleteCashier(cashier.id!);
-                  },
-                ),
+                onPressed: () {
+                  ShowDialog.showdialog(
+                    title: ParagraphText(
+                      text: "Confirmation",
+                      type: ParagraphType.bodyText1,
+                    ),
+                    content: ParagraphText(
+                      text:
+                          "Voulez-vous vraiment supprimer ${cashier.username} ?",
+                      type: ParagraphType.bodyText2,
+                    ),
+                    cancelButton: CustomButton(
+                      backgroundColor: AppColor.bodyText2Color,
+                      text: "Annuler",
+                      onPressed: () {
+                        Get.back();
+                      },
+                    ),
+                    actionButton: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: CustomButton(
+                        backgroundColor: Colors.red,
+                        text: "Supprimer",
+                        onPressed: () {
+                          controller.deleteCashier(cashier.id!);
+                          Get.back();
+                        },
+                      ),
+                    ),
+                  );
+                },
               ),
             );
           },
         );
       }),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColor.bodyText2Color,
+        backgroundColor: Colors.blue.shade400,
         onPressed: () {
           Get.put(RegisterController());
           Get.bottomSheet(

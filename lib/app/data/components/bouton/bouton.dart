@@ -42,6 +42,7 @@ class CustomButton extends StatelessWidget {
               strokeWidth: 2.5,
             ),
           ),
+          const SizedBox(width: 8),
         ],
         if (icon != null) ...[
           Icon(icon, color: textColor),
