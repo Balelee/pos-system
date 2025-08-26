@@ -94,7 +94,18 @@ class UserProfileView extends GetView<HomeController> {
                           backgroundColor: Colors.red,
                           text: "Modifier",
                           onPressed: () {
-                            controller.updateCashier(controller.user!);
+                            final updatedUser = User(
+                              id: controller.user!.id,
+                              username: controller
+                                  .loginController.usernameController.text
+                                  .trim(),
+                              password: controller
+                                  .loginController.passwordController.text
+                                  .trim(),
+                              status: controller.user!.status,
+                            );
+
+                            controller.updateCashier(updatedUser);
 
                             Get.back();
                           },

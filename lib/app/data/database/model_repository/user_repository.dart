@@ -47,13 +47,16 @@ class UserRepository {
     );
     return result.map((map) => User.fromMap(map)).toList();
   }
-  
 
   Future<bool> updateUser(User user) async {
     final db = await dbProvider.database;
     Map<String, dynamic> updatedRow = user.toMap();
     if (user.password.isNotEmpty) {
-      updatedRow['password'] = BCrypt.hashpw(user.password, BCrypt.gensalt());
+      if (!user.password.startsWith(r'$2a$')) {
+        updatedRow['password'] = BCrypt.hashpw(user.password, BCrypt.gensalt());
+      }
+    } else {
+      updatedRow.remove('password');
     }
     final rowsAffected = await db.update(
       'users',
@@ -63,6 +66,7 @@ class UserRepository {
     );
     return rowsAffected > 0;
   }
+
 
   Future<int> deleteUser(User user) async {
     final db = await dbProvider.database;
@@ -107,30 +111,28 @@ class UserRepository {
     );
   }
 
-
-Future<List<Session>> fetchLastSessionCashiers() async {
-  final db = await dbProvider.database;
-  final usersResult = await db.query(
-    'users',
-    where: 'status = ?',
-    whereArgs: ['cashier'],
-  );
-  List<Session> sessions = [];
-  for (var userMap in usersResult) {
-    final user = User.fromMap(userMap);
-    final sessionResult = await db.query(
-      'sessions',
-      where: 'user_id = ?',
-      whereArgs: [user.id],
-      orderBy: 'login_time DESC',
-      limit: 1,
+  Future<List<Session>> fetchLastSessionCashiers() async {
+    final db = await dbProvider.database;
+    final usersResult = await db.query(
+      'users',
+      where: 'status = ?',
+      whereArgs: ['cashier'],
     );
-    if (sessionResult.isNotEmpty) {
-      final session = Session.fromMap(sessionResult.first, user);
-      sessions.add(session);
+    List<Session> sessions = [];
+    for (var userMap in usersResult) {
+      final user = User.fromMap(userMap);
+      final sessionResult = await db.query(
+        'sessions',
+        where: 'user_id = ?',
+        whereArgs: [user.id],
+        orderBy: 'login_time DESC',
+        limit: 1,
+      );
+      if (sessionResult.isNotEmpty) {
+        final session = Session.fromMap(sessionResult.first, user);
+        sessions.add(session);
+      }
     }
+    return sessions;
   }
-  return sessions;
-}
-
 }

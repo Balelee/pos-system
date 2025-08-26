@@ -38,17 +38,17 @@ class HomeController extends GetxController {
     try {
       loginController.isLoading.value = true;
       final rowsAffected = await userRepository.updateUser(user);
-      if (rowsAffected == true) {
+      if (rowsAffected) {
         Toast.toast(
           title: Text("Mise à jour réussie"),
-          description: "Le caissier a été mis à jour avec succès.",
+          description: "L'utilisateur a été mis à jour avec succès.",
           type: ToastificationType.success,
           style: ToastificationStyle.fillColored,
         );
       } else {
         Toast.toast(
           title: Text("Erreur de mise à jour"),
-          description: "Aucune modification n'a été apportée au caissier.",
+          description: "Aucune modification n'a été apportée.",
           type: ToastificationType.error,
           style: ToastificationStyle.fillColored,
         );
@@ -56,8 +56,7 @@ class HomeController extends GetxController {
     } catch (e) {
       Toast.toast(
         title: Text("Erreur inconnue"),
-        description:
-            "Une erreur est survenue lors de la mise à jour du caissier: $e",
+        description: "Une erreur est survenue lors de la mise à jour: $e",
         type: ToastificationType.error,
         style: ToastificationStyle.fillColored,
       );
