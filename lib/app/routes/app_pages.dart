@@ -6,6 +6,8 @@ import '../modules/listCashier/bindings/list_cashier_binding.dart';
 import '../modules/listCashier/views/list_cashier_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
+import '../modules/product/bindings/product_binding.dart';
+import '../modules/product/views/product_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
 
@@ -38,6 +40,11 @@ class AppPages {
       name: _Paths.LIST_CASHIER,
       page: () => const ListCashierView(),
       binding: ListCashierBinding(),
+    ),
+    GetPage(
+      name: _Paths.PRODUCT,
+      page: () => const ProductView(),
+      binding: ProductBinding(),
     ),
   ];
 }

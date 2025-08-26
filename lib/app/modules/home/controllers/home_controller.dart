@@ -36,36 +36,35 @@ class HomeController extends GetxController {
 
   Future<void> updateCashier(User user) async {
     try {
+      loginController.isLoading.value = true;
       final rowsAffected = await userRepository.updateUser(user);
-
-      if (rowsAffected > 0) {
-        final index = userCashiers.indexWhere((c) => c.id == user.id);
-        if (index != -1) {
-          userCashiers[index] = user;
-          userCashiers.refresh();
-        }
+      if (rowsAffected == true) {
         Toast.toast(
           title: Text("Mise à jour réussie"),
           description: "Le caissier a été mis à jour avec succès.",
-          type: ToastificationType.error,
+          type: ToastificationType.success,
           style: ToastificationStyle.fillColored,
         );
       } else {
         Toast.toast(
           title: Text("Erreur de mise à jour"),
-          description: " Aucune modification n'a été apportée au caissier.",
+          description: "Aucune modification n'a été apportée au caissier.",
           type: ToastificationType.error,
           style: ToastificationStyle.fillColored,
         );
       }
     } catch (e) {
       Toast.toast(
-        title: Text("Erreur inconnu"),
+        title: Text("Erreur inconnue"),
         description:
             "Une erreur est survenue lors de la mise à jour du caissier: $e",
         type: ToastificationType.error,
         style: ToastificationStyle.fillColored,
       );
+    } finally {
+      loginController.isLoading.value = false;
+      loginController.usernameController.clear();
+      loginController.passwordController.clear();
     }
   }
 

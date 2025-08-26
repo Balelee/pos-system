@@ -47,19 +47,21 @@ class UserRepository {
     );
     return result.map((map) => User.fromMap(map)).toList();
   }
+  
 
-  Future<int> updateUser(User user) async {
+  Future<bool> updateUser(User user) async {
     final db = await dbProvider.database;
     Map<String, dynamic> updatedRow = user.toMap();
     if (user.password.isNotEmpty) {
       updatedRow['password'] = BCrypt.hashpw(user.password, BCrypt.gensalt());
     }
-    return await db.update(
+    final rowsAffected = await db.update(
       'users',
       updatedRow,
       where: 'id = ?',
       whereArgs: [user.id],
     );
+    return rowsAffected > 0;
   }
 
   Future<int> deleteUser(User user) async {

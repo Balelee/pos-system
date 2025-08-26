@@ -100,6 +100,9 @@ class HomeView extends GetView<HomeController> {
               child: Column(
                 children: [
                   QuickAccessCard(
+                    onTap: () {
+                      Get.toNamed(Routes.PRODUCT);
+                    },
                     icon: Icons.category,
                     title: "Produits & Catégories",
                     color: Colors.deepPurple.shade400,
