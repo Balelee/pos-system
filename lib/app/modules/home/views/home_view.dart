@@ -58,11 +58,16 @@ class HomeView extends GetView<HomeController> {
                     ),
                   ),
                   if (controller.user?.status == UserStatus.admin)
-                    StatCard(
-                      icon: Icons.shopping_bag,
-                      label: "Produits",
-                      value: "125",
-                      color: Colors.orange.shade400,
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed(Routes.PRODUCT);
+                      },
+                      child: StatCard(
+                        icon: Icons.shopping_bag,
+                        label: "Produits",
+                        value: '2',
+                        color: Colors.orange.shade400,
+                      ),
                     ),
                   StatCard(
                     icon: Icons.warning,

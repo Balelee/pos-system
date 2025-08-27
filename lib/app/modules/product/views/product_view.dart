@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/product/views/edit_product_view.dart';
 import '../controllers/product_controller.dart';
@@ -108,72 +111,107 @@ class ProductView extends GetView<ProductController> {
               ),
             ),
             const SizedBox(height: 10),
-            Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.75,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: controller.products.length,
-                itemBuilder: (context, index) {
-                  final product = controller.products[index];
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+            Obx(() {
+              if (controller.articles.isEmpty) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        color: Colors.blue,
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(16)),
-                          child: Image.network(
-                            product["image"].toString(),
-                            height: 100,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(product["name"].toString(),
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            "${product["price"]}CFA",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 13),
-                          ),
-                        ),
-                        Obx(
-                          () => Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove_circle_outline),
-                                onPressed: () => controller.decrease(index),
-                              ),
-                              Text("${controller.quantities[index]}"),
-                              IconButton(
-                                icon: const Icon(Icons.add_circle_outline,
-                                    color: Colors.blue),
-                                onPressed: () => controller.increase(index),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+                    ParagraphText(
+                      text: "Aucun article disponible",
+                      type: ParagraphType.bodyText2,
+                    )
+                  ],
+                );
+              } else {
+                return Expanded(
+                  child: GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.75,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
                     ),
-                  );
-                },
-              ),
-            ),
+                    itemCount: controller.articles.length,
+                    itemBuilder: (context, index) {
+                      final article = controller.articles[index];
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(16)),
+                              child: article.image != null &&
+                                      article.image!.isNotEmpty
+                                  ? Image.file(
+                                      File(article.image!),
+                                      height: 100,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Container(
+                                      height: 100,
+                                      width: double.infinity,
+                                      color: Colors.grey[300],
+                                      child: Icon(Icons.image_not_supported),
+                                    ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                article.label,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                "${article.unit_price} CFA",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
+                            ),
+                            Obx(() => Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                          Icons.remove_circle_outline),
+                                      onPressed: () =>
+                                          controller.decrease(index),
+                                    ),
+                                    Text("${controller.quantities[index]}"),
+                                    IconButton(
+                                      icon: const Icon(Icons.add_circle_outline,
+                                          color: Colors.blue),
+                                      onPressed: () =>
+                                          controller.increase(index),
+                                    ),
+                                  ],
+                                ))
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+            }),
           ],
         ),
       ),

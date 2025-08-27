@@ -5,14 +5,12 @@ import 'package:sqflite/sqflite.dart';
 class ArticleRepository {
   final DatabaseHelper dbHelper = DatabaseHelper.instance;
 
-  // Récupérer tous les articles
   Future<List<Article>> getAllArticles() async {
     final db = await dbHelper.database;
     final result = await db.query('articles');
     return result.map((map) => Article.fromMap(map)).toList();
   }
 
-  // Récupérer un article par ID
   Future<Article?> getArticleById(int id) async {
     final db = await dbHelper.database;
     final result = await db.query(
@@ -26,17 +24,21 @@ class ArticleRepository {
     return null;
   }
 
-  // Ajouter un nouvel article
-  Future<int> insertArticle(Article article) async {
+  Future<Article> insertArticle(Article article) async {
     final db = await dbHelper.database;
-    return await db.insert(
+    final id = await db.insert(
       'articles',
       article.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    return Article(
+      id: id,
+      category_id: article.category_id,
+      label: article.label,
+      unit_price: article.unit_price,
+    );
   }
 
-  // Mettre à jour un article
   Future<int> updateArticle(Article article) async {
     final db = await dbHelper.database;
     return await db.update(

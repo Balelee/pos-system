@@ -1,23 +1,23 @@
 class Category {
   final int? id;
-  final String label;
+  final String name;
 
   Category({
     this.id,
-    required this.label,
+    required this.name,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'name': label,
+      'name': name,
     };
   }
 
   factory Category.fromMap(Map<String, dynamic> map) {
     return Category(
       id: map['id'],
-      label: map['label'],
+      name: map['name'] ?? "",
     );
   }
 }
