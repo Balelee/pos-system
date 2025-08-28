@@ -49,22 +49,21 @@ class ArticleRepository {
     );
   }
 
-  // Supprimer un article
-  Future<int> deleteArticle(int id) async {
+ Future<Article?> deleteArticle(int id) async {
     final db = await dbHelper.database;
-    return await db.delete(
-      'articles',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    final maps = await db.query('articles', where: 'id = ?', whereArgs: [id]);
+    if (maps.isEmpty) return null;
+    final article = Article.fromMap(maps.first);
+    await db.delete('articles', where: 'id = ?', whereArgs: [id]);
+    return article;
   }
 
-  // Rechercher des articles par label
+
   Future<List<Article>> searchArticles(String query) async {
     final db = await dbHelper.database;
     final result = await db.query(
       'articles',
-      where: 'label LIKE ?',
+      where: 'label LIKE ? COLLATE NOCASE',
       whereArgs: ['%$query%'],
     );
     return result.map((map) => Article.fromMap(map)).toList();

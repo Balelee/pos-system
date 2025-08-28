@@ -1,14 +1,19 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pos/app/data/components/bouton/bouton.dart';
+import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
+import 'package:pos/app/models/category.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/product/views/edit_product_view.dart';
+import 'package:pos/app/widget/showDialog.dart';
 import '../controllers/product_controller.dart';
+
 
 class ProductView extends GetView<ProductController> {
   const ProductView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +25,7 @@ class ProductView extends GetView<ProductController> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  Icon(Icons.grid_view_rounded, size: 28),
+                  const Icon(Icons.grid_view_rounded, size: 28),
                   const Spacer(),
                   Obx(() => Container(
                         padding: const EdgeInsets.symmetric(
@@ -49,24 +54,43 @@ class ProductView extends GetView<ProductController> {
                         ),
                       )),
                   const Spacer(),
-                  Icon(Icons.notifications_none, size: 28),
+                  const Icon(Icons.notifications_none, size: 28),
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Recherche..",
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: const Icon(Icons.tune),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none,
+              child: Obx(
+                () => TextField(
+                  decoration: InputDecoration(
+                    hintText: controller.hintText.value,
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: PopupMenuButton<String>(
+                      color: Colors.white,
+                      icon: Icon(Icons.tune),
+                      onSelected: (value) {
+                        controller.setSearchHint(value);
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'name',
+                          child: Text('nom'),
+                        ),
+                        PopupMenuItem(
+                          value: 'price',
+                          child: Text('Prix'),
+                        ),
+                      ],
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
+                  onChanged: controller.onSearch,
                 ),
               ),
             ),
@@ -81,7 +105,10 @@ class ProductView extends GetView<ProductController> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      controller.selectedCategory.value = null;
+                      controller.getAllArticles();
+                    },
                     child: const Text(
                       "Tous",
                       style: TextStyle(
@@ -91,48 +118,73 @@ class ProductView extends GetView<ProductController> {
                     ),
                   ),
                   const SizedBox(width: 5),
-                  OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    onPressed: () {},
-                    icon: const Icon(Icons.arrow_drop_down),
-                    label: const Text(
-                      "Categories",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
+                  PopupMenuButton<Category>(
+                    color: Colors.white,
+                    onSelected: (Category category) {
+                      controller.selectCategory(category);
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return controller.categories
+                          .map((cat) => PopupMenuItem(
+                                value: cat,
+                                child: Text(cat.name),
+                              ))
+                          .toList();
+                    },
+                    child: Obx(() => Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                controller.selectedCategory.value?.name ??
+                                    "Categories",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.arrow_drop_down),
+                            ],
+                          ),
+                        )),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 10),
-            Obx(() {
-              if (controller.articles.isEmpty) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        color: Colors.blue,
-                      ),
+            Expanded(
+              child: Obx(() {
+                if (controller.articles.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 20,
+                          height: 20,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ParagraphText(
+                          text: "Aucun article disponible",
+                          type: ParagraphType.bodyText2,
+                        ),
+                      ],
                     ),
-                    ParagraphText(
-                      text: "Aucun article disponible",
-                      type: ParagraphType.bodyText2,
-                    )
-                  ],
-                );
-              } else {
-                return Expanded(
-                  child: GridView.builder(
+                  );
+                } else {
+                  return GridView.builder(
                     padding: const EdgeInsets.all(16),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -154,7 +206,8 @@ class ProductView extends GetView<ProductController> {
                           children: [
                             ClipRRect(
                               borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(16)),
+                                top: Radius.circular(16),
+                              ),
                               child: article.image != null &&
                                       article.image!.isNotEmpty
                                   ? Image.file(
@@ -167,7 +220,8 @@ class ProductView extends GetView<ProductController> {
                                       height: 100,
                                       width: double.infinity,
                                       color: Colors.grey[300],
-                                      child: Icon(Icons.image_not_supported),
+                                      child:
+                                          const Icon(Icons.image_not_supported),
                                     ),
                             ),
                             Padding(
@@ -182,36 +236,89 @@ class ProductView extends GetView<ProductController> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Text(
-                                "${article.unit_price} CFA",
-                                style: TextStyle(
+                                "${article.unit_price?.toStringAsFixed(0)} CFA",
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 13),
                               ),
                             ),
-                            Obx(() => Row(
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                          Icons.remove_circle_outline),
-                                      onPressed: () =>
-                                          controller.decrease(index),
-                                    ),
-                                    Text("${controller.quantities[index]}"),
-                                    IconButton(
-                                      icon: const Icon(Icons.add_circle_outline,
-                                          color: Colors.blue),
-                                      onPressed: () =>
-                                          controller.increase(index),
-                                    ),
-                                  ],
-                                ))
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Obx(
+                                  () => Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(
+                                            Icons.remove_circle_outline),
+                                        onPressed: () =>
+                                            controller.decrease(index),
+                                      ),
+                                      Text(
+                                        "${controller.quantities[index]}",
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.add_circle_outline,
+                                          color: Colors.blue,
+                                        ),
+                                        onPressed: () =>
+                                            controller.increase(index),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    ShowDialog.showdialog(
+                                      title: ParagraphText(
+                                        text: "Confirmation",
+                                        type: ParagraphType.bodyText1,
+                                      ),
+                                      content: ParagraphText(
+                                        text:
+                                            "Voulez-vous vraiment supprimer ${article.label} ?",
+                                        type: ParagraphType.bodyText2,
+                                      ),
+                                      cancelButton: CustomButton(
+                                        backgroundColor:
+                                            AppColor.bodyText2Color,
+                                        text: "Annuler",
+                                        onPressed: () {
+                                          Get.back();
+                                        },
+                                      ),
+                                      actionButton: Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 8.0),
+                                        child: CustomButton(
+                                          backgroundColor: Colors.red,
+                                          text: "Supprimer",
+                                          onPressed: () {
+                                            controller
+                                                .deleteArticle(article.id!);
+
+                                            Get.back();
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.delete,
+                                    size: 20,
+                                    color: Colors.red,
+                                  ),
+                                )
+                              ],
+                            )
                           ],
                         ),
                       );
                     },
-                  ),
-                );
-              }
-            }),
+                  );
+                }
+              }),
+            ),
           ],
         ),
       ),
@@ -219,7 +326,7 @@ class ProductView extends GetView<ProductController> {
         visible: controller.homeController.user?.status == UserStatus.admin,
         child: FloatingActionButton(
           backgroundColor: Colors.blue[300],
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
           onPressed: () {
             Get.to(() => EditProductView());
           },

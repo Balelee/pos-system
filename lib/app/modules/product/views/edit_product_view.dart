@@ -6,6 +6,8 @@ import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/data/components/textField/textField.dart';
 import 'package:pos/app/models/category.dart';
 import 'package:pos/app/modules/product/controllers/product_controller.dart';
+import 'package:pos/utils/toast.dart';
+import 'package:toastification/toastification.dart';
 
 class EditProductView extends GetView<ProductController> {
   const EditProductView({super.key});
@@ -193,6 +195,15 @@ class EditProductView extends GetView<ProductController> {
                       controller.homeController.loginController.isLoading.value,
                   text: "Sauvegarder",
                   onPressed: () {
+                    if (controller.categories.isEmpty) {
+                      Toast.toast(
+                        title: Text("Erreur article"),
+                        description: "Ajoutez une catégorie pour cet article",
+                        type: ToastificationType.error,
+                        style: ToastificationStyle.fillColored,
+                      );
+                      return;
+                    }
                     controller.insertProduct();
                     Get.back();
                   },

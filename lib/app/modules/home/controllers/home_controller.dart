@@ -14,7 +14,6 @@ class HomeController extends GetxController {
   RxList<Session> sessionCashier = <Session>[].obs;
   final userRepository = UserRepository();
   LoginController loginController = Get.put(LoginController());
- 
 
   Future<void> loadCashiers() async {
     try {
