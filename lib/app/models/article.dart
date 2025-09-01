@@ -3,6 +3,7 @@ class Article {
   final int? category_id;
   final String label;
   final double? unit_price;
+  int? quantity;
   final String? image;
 
   Article(
@@ -10,6 +11,7 @@ class Article {
       this.category_id,
       required this.label,
       required this.unit_price,
+      this.quantity,
       this.image});
 
   Map<String, dynamic> toMap() {
@@ -18,6 +20,7 @@ class Article {
       'category_id': category_id,
       'label': label,
       'unit_price': unit_price,
+      'quantity': quantity,
       'image': image
     };
   }
@@ -28,12 +31,13 @@ class Article {
       category_id: map['category_id'],
       label: map['label'],
       unit_price: map['unit_price'],
+      quantity: map['quantity'],
       image: map['image'],
     );
   }
 
   @override
   String toString() {
-    return 'Article{id: $id, category_id: $category_id, label: $label, unitPrice: $unit_price, image: $image}';
+    return 'Article{id: $id, category_id: $category_id, label: $label, unitPrice: $unit_price, quantity: $quantity , image: $image}';
   }
 }

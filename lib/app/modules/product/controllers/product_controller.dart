@@ -4,16 +4,18 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pos/app/data/database/model_repository/article_repository.dart';
 import 'package:pos/app/data/database/model_repository/category_repository.dart';
+import 'package:pos/app/data/database/model_repository/sale_repository.dart';
 import 'package:pos/app/models/article.dart';
 import 'package:pos/app/models/category.dart';
+import 'package:pos/app/models/sale.dart';
+import 'package:pos/app/models/soldarticle.dart';
 import 'package:pos/app/modules/home/controllers/home_controller.dart';
 import 'package:pos/utils/toast.dart';
 import 'package:toastification/toastification.dart';
 
 class ProductController extends GetxController {
   Rxn<File> imageFile = Rxn<File>();
-  late RxList<int> quantities;
-  HomeController homeController = Get.put(HomeController());
+  final HomeController homeController = Get.find<HomeController>();
   final nameController = TextEditingController();
   final priceController = TextEditingController();
   final newCategoryController = TextEditingController();
@@ -22,9 +24,11 @@ class ProductController extends GetxController {
   List<Article> allArticles = [];
   final categorieRepo = CategoryDao();
   final articleRepo = ArticleRepository();
+  final saleRepo = SaleRepository();
   Rxn<Category> selectedCategory = Rxn<Category>();
   RxString hintText = "Recherché par nom...".obs;
   RxString searchFilter = "name".obs;
+  List<Soldarticle> cart = [];
 
   Future<void> addCategory() async {
     final text = newCategoryController.text.trim();
@@ -53,11 +57,11 @@ class ProductController extends GetxController {
 
   void insertProduct() async {
     final newArticle = Article(
-      image: imageFile.value?.path,
-      label: nameController.text,
-      unit_price: double.tryParse(priceController.text) ?? 0,
-      category_id: selectedCategory.value?.id,
-    );
+        image: imageFile.value?.path,
+        label: nameController.text,
+        unit_price: double.tryParse(priceController.text) ?? 0,
+        category_id: selectedCategory.value?.id,
+        quantity: 0);
     try {
       homeController.loginController.isLoading.value = true;
       await articleRepo.insertArticle(newArticle);
@@ -85,25 +89,25 @@ class ProductController extends GetxController {
   }
 
   void increase(int index) {
-    quantities[index]++;
+    final article = articles[index];
+    article.quantity = (article.quantity ?? 0) + 1;
+    articles[index] = article; // met à jour la RxList
+    articleRepo.updateArticle(article); // sauvegarde en DB
   }
 
   void decrease(int index) {
-    if (quantities[index] > 1) {
-      quantities[index]--;
+    final article = articles[index];
+    if ((article.quantity ?? 0) > 0) {
+      article.quantity = (article.quantity! - 1);
+      articles[index] = article;
+      articleRepo.updateArticle(article);
     }
   }
 
-  int get totalItems => quantities.fold(0, (sum, q) => sum + q);
+  int get totalItems => articles.fold(0, (sum, a) => sum + (a.quantity ?? 0));
 
-  double get totalPrice {
-    double total = 0;
-    for (int i = 0; i < articles.length; i++) {
-      final price = articles[i].unit_price as double;
-      total += price * quantities[i];
-    }
-    return total;
-  }
+  double get totalPrice => articles.fold(
+      0, (sum, a) => sum + ((a.unit_price ?? 0) * (a.quantity ?? 0)));
 
   Future<void> pickImage() async {
     final picker = ImagePicker();
@@ -122,7 +126,6 @@ class ProductController extends GetxController {
     final listArticle = await articleRepo.getAllArticles();
     allArticles = listArticle;
     articles.assignAll(listArticle);
-    quantities.assignAll(List<int>.filled(listArticle.length, 1));
   }
 
   void onSearch(String input) async {
@@ -168,7 +171,6 @@ class ProductController extends GetxController {
         final index = articles.indexWhere((article) => article.id == id);
         if (index != -1) {
           articles.removeAt(index);
-          quantities.removeAt(index);
         }
         Toast.toast(
           title: Text("Succès"),
@@ -196,10 +198,34 @@ class ProductController extends GetxController {
     }
   }
 
+  Future<void> createSale() async {
+    final sale = Sale(
+      user_id: homeController.user?.id,
+      date: DateTime.now(),
+    );
+    final items = cart
+        .map(
+          (c) => Soldarticle(
+            sale_id: c.sale_id,
+            article_id: c.article_id,
+            quantity: c.quantity,
+            unit_price: c.unit_price,
+          ),
+        )
+        .toList();
+    print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+    print(items);
+    final success = await saleRepo.applySale(sale, items);
+    if (success) {
+      print("✅ Vente appliquée avec succès !");
+    } else {
+      print("❌ Erreur lors de l'application de la vente");
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
-    quantities = List<int>.filled(articles.length, 1).obs;
     getAllCategories();
     getAllArticles();
   }

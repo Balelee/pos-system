@@ -67,7 +67,6 @@ class UserRepository {
     return rowsAffected > 0;
   }
 
-
   Future<int> deleteUser(User user) async {
     final db = await dbProvider.database;
     if (user.id == null) {

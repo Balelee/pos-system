@@ -13,6 +13,16 @@ class Soldarticle {
     required this.quantity,
   });
 
+    Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'article_id': article_id,
+      'sale_id': sale_id,
+      'quantity': quantity,
+      'unit_price': unit_price,
+    };
+  }
+
 
   factory Soldarticle.fromMap(Map<String, dynamic> map) {
     return Soldarticle(

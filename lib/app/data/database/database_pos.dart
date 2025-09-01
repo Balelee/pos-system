@@ -1,5 +1,6 @@
 import 'package:pos/app/data/database/migrations/create_article_table.dart';
 import 'package:pos/app/data/database/migrations/create_category_table.dart';
+import 'package:pos/app/data/database/migrations/create_sale_table.dart';
 import 'package:pos/app/data/database/migrations/create_users_table.dart';
 import 'package:pos/app/data/database/seeders/database_seeder.dart';
 import 'package:sqflite/sqflite.dart';
@@ -33,6 +34,7 @@ class DatabaseHelper {
     await CreateUsersTable().up(db);
     await CreateCategoryTable().up(db);
     await CreateArticleTable().up(db);
+    await CreateSalesAndSoldArticlesTables().up(db);
 
     // ─────────── Seed initial data ───────────
     DatabaseSeeder().run(db);

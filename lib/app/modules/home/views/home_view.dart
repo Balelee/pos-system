@@ -65,7 +65,7 @@ class HomeView extends GetView<HomeController> {
                       child: StatCard(
                         icon: Icons.shopping_bag,
                         label: "Produits",
-                        value: '2',
+                        value: "2",
                         color: Colors.orange.shade400,
                       ),
                     ),

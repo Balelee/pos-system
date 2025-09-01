@@ -8,6 +8,7 @@ class CreateArticleTable {
         category_id INTEGER,
         label TEXT NOT NULL,
         unit_price REAL NOT NULL,
+        quantity INTEGER DEFAULT 0,
         image TEXT,
         FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL ON UPDATE CASCADE
       )
