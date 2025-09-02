@@ -1,36 +1,43 @@
+import 'package:pos/app/models/article.dart';
+
 class Soldarticle {
   final int? id;
-  final int? article_id;
   final int? sale_id;
-  final int quantity;
-  final double? unit_price;
+  final Article? article;
+  int quantity;
+  final double unit_price;
 
   Soldarticle({
     this.id,
-    this.article_id,
     this.sale_id,
-    required this.unit_price,
+    this.article,
     required this.quantity,
+    required this.unit_price,
   });
 
-    Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'article_id': article_id,
-      'sale_id': sale_id,
+  Map<String, dynamic> toMap() {
+    final map = <String, dynamic>{
+      'article_id': article?.id, 
       'quantity': quantity,
       'unit_price': unit_price,
     };
+    if (id != null) map['id'] = id;
+    if (sale_id != null) map['sale_id'] = sale_id;
+    return map;
   }
 
-
-  factory Soldarticle.fromMap(Map<String, dynamic> map) {
+  factory Soldarticle.fromMap(Map<String, dynamic> map, {Article? article}) {
     return Soldarticle(
       id: map['id'],
-      article_id: map['article_id'],
       sale_id: map['sale_id'],
-      unit_price: map['unit_price'],
+      article: article,
       quantity: map['quantity'],
+      unit_price: map['unit_price']?.toDouble() ?? 0.0,
     );
+  }
+
+  @override
+  String toString() {
+    return "Soldarticle(article: ${article?.label}, qty: $quantity, price: $unit_price, sale_id: $sale_id)";
   }
 }

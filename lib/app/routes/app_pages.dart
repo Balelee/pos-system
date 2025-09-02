@@ -10,6 +10,10 @@ import '../modules/product/bindings/product_binding.dart';
 import '../modules/product/views/product_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
+import '../modules/saleCard/bindings/sale_card_binding.dart';
+import '../modules/saleCard/views/sale_card_view.dart';
+import '../modules/saleHistorique/bindings/sale_historique_binding.dart';
+import '../modules/saleHistorique/views/sale_historique_view.dart';
 
 part 'app_routes.dart';
 
@@ -45,6 +49,16 @@ class AppPages {
       name: _Paths.PRODUCT,
       page: () => const ProductView(),
       binding: ProductBinding(),
+    ),
+    GetPage(
+      name: _Paths.SALE_CARD,
+      page: () => const SaleCardView(),
+      binding: SaleCardBinding(),
+    ),
+    GetPage(
+      name: _Paths.SALE_HISTORIQUE,
+      page: () => const SaleHistoriqueView(),
+      binding: SaleHistoriqueBinding(),
     ),
   ];
 }

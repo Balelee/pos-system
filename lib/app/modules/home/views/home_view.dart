@@ -127,6 +127,9 @@ class HomeView extends GetView<HomeController> {
                     color: Colors.indigo.shade400,
                     iconquicard: Colors.indigo.shade400,
                     arrowColor: Colors.indigo.shade400,
+                    onTap: () {
+                      Get.toNamed(Routes.SALE_HISTORIQUE);
+                    },
                   ),
                   QuickAccessCard(
                     icon: Icons.payment,

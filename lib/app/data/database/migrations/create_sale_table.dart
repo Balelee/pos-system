@@ -7,7 +7,8 @@ class CreateSalesAndSoldArticlesTables {
       CREATE TABLE sales (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
-        date TEXT
+        date TEXT,
+        total REAL NOT NULL
       )
     ''');
 

@@ -7,7 +7,6 @@ import 'package:pos/app/data/database/model_repository/category_repository.dart'
 import 'package:pos/app/data/database/model_repository/sale_repository.dart';
 import 'package:pos/app/models/article.dart';
 import 'package:pos/app/models/category.dart';
-import 'package:pos/app/models/sale.dart';
 import 'package:pos/app/models/soldarticle.dart';
 import 'package:pos/app/modules/home/controllers/home_controller.dart';
 import 'package:pos/utils/toast.dart';
@@ -28,7 +27,7 @@ class ProductController extends GetxController {
   Rxn<Category> selectedCategory = Rxn<Category>();
   RxString hintText = "Recherché par nom...".obs;
   RxString searchFilter = "name".obs;
-  List<Soldarticle> cart = [];
+  var cart = <Soldarticle>[].obs;
 
   Future<void> addCategory() async {
     final text = newCategoryController.text.trim();
@@ -198,30 +197,22 @@ class ProductController extends GetxController {
     }
   }
 
-  Future<void> createSale() async {
-    final sale = Sale(
-      user_id: homeController.user?.id,
-      date: DateTime.now(),
-    );
-    final items = cart
-        .map(
-          (c) => Soldarticle(
-            sale_id: c.sale_id,
-            article_id: c.article_id,
-            quantity: c.quantity,
-            unit_price: c.unit_price,
-          ),
-        )
-        .toList();
-    print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-    print(items);
-    final success = await saleRepo.applySale(sale, items);
-    if (success) {
-      print("✅ Vente appliquée avec succès !");
+  void addToCart(Article article) {
+    final index = cart.indexWhere((item) => item.article?.id == article.id);
+    if (index >= 0) {
+      cart[index].quantity += 1;
+      cart.refresh();
     } else {
-      print("❌ Erreur lors de l'application de la vente");
+      cart.add(Soldarticle(
+        article: article,
+        quantity: 1,
+        unit_price: article.unit_price!,
+      ));
     }
+    print("🛒 Panier: $cart");
   }
+
+
 
   @override
   void onInit() {

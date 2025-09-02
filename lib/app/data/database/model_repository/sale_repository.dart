@@ -1,6 +1,8 @@
 import 'package:pos/app/data/database/database_pos.dart';
+import 'package:pos/app/models/article.dart';
 import 'package:pos/app/models/sale.dart';
 import 'package:pos/app/models/soldarticle.dart';
+import 'package:pos/app/models/user.dart';
 
 class SaleRepository {
   final dbProvider = DatabaseHelper.instance;
@@ -15,30 +17,56 @@ class SaleRepository {
           await txn.insert('sold_articles', map);
           await txn.rawUpdate(
             'UPDATE articles SET quantity = quantity - ? WHERE id = ?',
-            [item.quantity, item.article_id],
+            [item.quantity, item.article?.id],
           );
         }
       });
       return true;
     } catch (e) {
-      print("Erreur lors de l'application de la vente : $e");
+      print("❌ Erreur lors de l'application de la vente : $e");
       return false;
     }
   }
 
-  Future<List<Sale>> fetchSales() async {
+  Future<List<Sale>> fetchSalesWithArticles() async {
     final db = await dbProvider.database;
-    final result = await db.query('sales', orderBy: 'date DESC');
-    return result.map((map) => Sale.fromMap(map)).toList();
-  }
-
-  Future<List<Soldarticle>> fetchSoldArticles(int saleId) async {
-    final db = await dbProvider.database;
-    final result = await db.query(
-      'sold_articles',
-      where: 'sale_id = ?',
-      whereArgs: [saleId],
-    );
-    return result.map((map) => Soldarticle.fromMap(map)).toList();
+    final salesResult = await db.query('sales', orderBy: 'date DESC');
+    List<Sale> sales = [];
+    for (var saleMap in salesResult) {
+      final sale = Sale.fromMap(saleMap);
+      final soldArticlesResult = await db.query(
+        'sold_articles',
+        where: 'sale_id = ?',
+        whereArgs: [sale.id],
+      );
+      final soldArticles = <Soldarticle>[];
+      for (var soldMap in soldArticlesResult) {
+        Article? article;
+        final articleResult = await db.query(
+          'articles',
+          where: 'id = ?',
+          whereArgs: [soldMap['article_id']],
+          limit: 1,
+        );
+        if (articleResult.isNotEmpty) {
+          article = Article.fromMap(articleResult.first);
+        }
+        soldArticles.add(Soldarticle.fromMap(soldMap, article: article));
+      }
+      sale.soldArticles = soldArticles;
+      if (sale.user_id != null) {
+        final userResult = await db.query(
+          'users',
+          where: 'id = ?',
+          whereArgs: [sale.user_id],
+          limit: 1,
+        );
+        if (userResult.isNotEmpty) {
+          sale.user = User.fromMap(userResult.first);
+        }
+      }
+      sales.add(sale);
+    }
+    return sales;
   }
 }

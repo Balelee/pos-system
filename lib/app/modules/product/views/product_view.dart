@@ -7,6 +7,7 @@ import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/models/category.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/product/views/edit_product_view.dart';
+import 'package:pos/app/routes/app_pages.dart';
 import 'package:pos/app/widget/showDialog.dart';
 import '../controllers/product_controller.dart';
 
@@ -66,23 +67,35 @@ class ProductView extends GetView<ProductController> {
                         Positioned(
                           right: -2,
                           top: -2,
-                          child: Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 18,
-                              minHeight: 18,
-                            ),
-                            child: Text(
-                              "3",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
+                          child: Obx(
+                            () => GestureDetector(
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 18,
+                                  minHeight: 18,
+                                ),
+                                child: Text(
+                                  controller.cart.length.toString(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                              textAlign: TextAlign.center,
+                              onTap: () {
+                                print("cddqssddddddddddddddddddddddddddddddd");
+                                print(controller.cart);
+                                Get.toNamed(
+                                  Routes.SALE_CARD,
+                                  arguments: controller.cart,
+                                );
+                              },
                             ),
                           ),
                         ),
@@ -362,24 +375,28 @@ class ProductView extends GetView<ProductController> {
                                         GestureDetector(
                                           child: Container(
                                             padding: EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 6,
-                                            ),
+                                                horizontal: 16, vertical: 6),
                                             decoration: BoxDecoration(
-                                                color: article.quantity! > 0
-                                                    ? Colors.blue[100]
-                                                    : Colors.grey[200],
-                                                borderRadius:
-                                                    BorderRadius.circular(15)),
+                                              color: article.quantity! > 0
+                                                  ? Colors.blue[100]
+                                                  : Colors.grey[200],
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                            ),
                                             child: Text(
-                                              "Vendre",
+                                              "Ajouter",
                                               style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           onTap: () {
-                                            controller.createSale();
+                                            if (article.quantity! > 0) {
+                                              controller.addToCart(article);
+                                              // Optionnel : décrémente le stock visible
+                                              article.quantity =
+                                                  article.quantity! - 1;
+                                              controller.articles.refresh();
+                                            }
                                           },
                                         )
                                       ],
