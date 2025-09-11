@@ -5,6 +5,7 @@ import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/home/controllers/home_controller.dart';
 import 'package:pos/app/modules/home/views/user_profile_view.dart';
+import 'package:pos/app/modules/product/controllers/product_controller.dart';
 import 'package:pos/app/modules/register/controllers/register_controller.dart';
 import 'package:pos/app/modules/register/views/register_view.dart';
 import 'package:pos/app/routes/app_pages.dart';
@@ -47,55 +48,63 @@ class HomeView extends GetView<HomeController> {
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
                 children: [
-                  StatCard(
-                    icon: Icons.monetization_on,
-                    label: "Ventes du jour",
-                    value: "50,000 FCFA",
-                    gradient: LinearGradient(
-                      colors: [Colors.green.shade400, Colors.green.shade200],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                  GestureDetector(
+                    child: StatCard(
+                      icon: Icons.monetization_on,
+                      label: "Ventes du jour",
+                      value: "50,000 FCFA",
+                      gradient: LinearGradient(
+                        colors: [Colors.green.shade400, Colors.green.shade200],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                     ),
+                    onTap: () {
+                      Get.toNamed(Routes.SALE_HISTORIQUE);
+                    },
                   ),
-                  if (controller.user?.status == UserStatus.admin)
-                    GestureDetector(
-                      onTap: () {
-                        Get.toNamed(Routes.PRODUCT);
-                      },
-                      child: StatCard(
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed(Routes.PRODUCT);
+                    },
+                    child: Obx(
+                      () => StatCard(
                         icon: Icons.shopping_bag,
                         label: "Produits",
-                        value: "2",
+                        value:
+                            "${Get.put(ProductController()).articles.length}",
                         color: Colors.orange.shade400,
                       ),
                     ),
-                  StatCard(
-                    icon: Icons.warning,
-                    label: "Stock faible",
-                    value: "8",
-                    color: Colors.red.shade400,
                   ),
-                  if (controller.user?.status == UserStatus.admin)
-                    GestureDetector(
-                      onTap: () {
-                        Get.toNamed(Routes.LIST_CASHIER);
-                      },
-                      child: Obx(
-                        () => StatCard(
-                          icon: Icons.people,
-                          label: "Caissiers",
-                          value: "${controller.userCashiers.length}",
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.blue.shade400,
-                              Colors.blue.shade200
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                  Obx(
+                    () => StatCard(
+                      icon: Icons.warning,
+                      label: "Stock produits",
+                      value:
+                          "${Get.put(ProductController()).totalItems.toString()}",
+                      color: Colors.red.shade400,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      controller.user?.status == UserStatus.admin
+                          ? Get.toNamed(Routes.LIST_CASHIER)
+                          : null;
+                    },
+                    child: Obx(
+                      () => StatCard(
+                        icon: Icons.people,
+                        label: "Caissiers",
+                        value: "${controller.userCashiers.length}",
+                        gradient: LinearGradient(
+                          colors: [Colors.blue.shade400, Colors.blue.shade200],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
                       ),
                     ),
+                  ),
                 ],
               ),
             ),
@@ -113,13 +122,6 @@ class HomeView extends GetView<HomeController> {
                     color: Colors.deepPurple.shade400,
                     iconquicard: Colors.deepPurple.shade400,
                     arrowColor: Colors.deepPurple.shade400,
-                  ),
-                  QuickAccessCard(
-                    icon: Icons.bar_chart,
-                    title: "Stocks",
-                    color: Colors.teal.shade400,
-                    iconquicard: Colors.teal.shade400,
-                    arrowColor: Colors.teal.shade400,
                   ),
                   QuickAccessCard(
                     icon: Icons.history,

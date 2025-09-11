@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:pos/app/data/components/printer_helper.dart';
 import 'package:pos/app/data/database/model_repository/sale_repository.dart';
 import 'package:pos/app/models/sale.dart';
 import 'package:pos/app/models/soldarticle.dart';
@@ -8,13 +9,14 @@ class SaleCardController extends GetxController {
   RxList<Soldarticle> soldarticle = <Soldarticle>[].obs;
   final HomeController homeController = Get.find<HomeController>();
   final saleRepo = SaleRepository();
+  PrintService printService = PrintService();
 
-  Future<void> createSale() async {
+  Future<Sale?> createSale() async {
+    if (soldarticle.isEmpty) return null;
     final total = soldarticle.fold<double>(
       0,
       (sum, item) => sum + (item.unit_price * item.quantity),
     );
-    if (soldarticle.isEmpty) return;
     final sale = Sale(
       user_id: homeController.user?.id,
       date: DateTime.now(),
@@ -23,7 +25,9 @@ class SaleCardController extends GetxController {
     final success = await saleRepo.applySale(sale, soldarticle);
     if (success) {
       soldarticle.clear();
+      return sale;
     }
+    return null;
   }
 
   @override

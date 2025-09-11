@@ -90,8 +90,8 @@ class ProductController extends GetxController {
   void increase(int index) {
     final article = articles[index];
     article.quantity = (article.quantity ?? 0) + 1;
-    articles[index] = article; // met à jour la RxList
-    articleRepo.updateArticle(article); // sauvegarde en DB
+    articles[index] = article;
+    articleRepo.updateArticle(article);
   }
 
   void decrease(int index) {

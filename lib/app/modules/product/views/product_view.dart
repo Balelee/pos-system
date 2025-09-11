@@ -89,8 +89,6 @@ class ProductView extends GetView<ProductController> {
                                 ),
                               ),
                               onTap: () {
-                                print("cddqssddddddddddddddddddddddddddddddd");
-                                print(controller.cart);
                                 Get.toNamed(
                                   Routes.SALE_CARD,
                                   arguments: controller.cart,

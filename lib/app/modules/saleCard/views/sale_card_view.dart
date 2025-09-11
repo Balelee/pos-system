@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pos/app/data/components/bouton/bouton.dart';
 import 'package:pos/app/data/components/text/text.dart';
+import 'package:pos/app/models/sale.dart';
+import 'package:pos/app/widget/showDialog.dart';
 import '../controllers/sale_card_controller.dart';
 
 class SaleCardView extends GetView<SaleCardController> {
@@ -68,8 +71,33 @@ class SaleCardView extends GetView<SaleCardController> {
                 )),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {
-                controller.createSale();
+              onPressed: () async {
+                Sale? sale = await controller.createSale();
+                if (sale != null) {
+                  ShowDialog.showdialog(
+                    title: Text("Vente effectuée ✅"),
+                    content: Text(
+                      "La vente a été effectuée, voulez-vous imprimer le reçu ?",
+                    ),
+                    cancelButton: CustomButton(
+                      text: "Imprimer reçu",
+                      onPressed: () async {
+                        await controller.printService.printSale(sale);
+                        Get.back();
+                      },
+                    ),
+                    actionButton: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: CustomButton(
+                        backgroundColor: Colors.red,
+                        text: "Quitter",
+                        onPressed: () {
+                          Get.back();
+                        },
+                      ),
+                    ),
+                  );
+                }
               },
               child: const Text(
                 "Vendre",

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pos/app/data/database/model_repository/article_repository.dart';
 import 'package:pos/app/data/database/model_repository/user_repository.dart';
+import 'package:pos/app/models/article.dart';
 import 'package:pos/app/models/session.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/login/controllers/login_controller.dart';
@@ -13,6 +15,9 @@ class HomeController extends GetxController {
   RxList<User> userCashiers = <User>[].obs;
   RxList<Session> sessionCashier = <Session>[].obs;
   final userRepository = UserRepository();
+  RxList<Article> articles = <Article>[].obs;
+  List<Article> allArticles = [];
+  final articleRepo = ArticleRepository();
   LoginController loginController = Get.put(LoginController());
 
   Future<void> loadCashiers() async {
@@ -88,6 +93,12 @@ class HomeController extends GetxController {
     }
   }
 
+  Future<void> getAllArticles() async {
+    final listArticle = await articleRepo.getAllArticles();
+    allArticles = listArticle;
+    articles.assignAll(listArticle);
+  }
+
   final List<Color> avatarColors = [
     Colors.blue.shade400,
     Colors.green.shade400,
@@ -110,6 +121,7 @@ class HomeController extends GetxController {
         loginController.usernameController.text = user!.username;
       });
     }
+    getAllArticles();
   }
 
   @override
