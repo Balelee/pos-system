@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final TextStyle? hintStyle;
   final IconData? suffixIcon;
   final VoidCallback? onSuffixPressed;
+  final int? maxLength;
 
   const CustomTextField(
       {Key? key,
@@ -23,7 +24,8 @@ class CustomTextField extends StatelessWidget {
       this.suffixIcon,
       this.borderSide,
       this.onSuffixPressed,
-      this.hintStyle})
+      this.hintStyle,
+      this.maxLength})
       : super(key: key);
 
   @override
@@ -35,6 +37,7 @@ class CustomTextField extends StatelessWidget {
         const SizedBox(height: 5),
         TextField(
           controller: controller,
+          maxLength: maxLength,
           obscureText: obscureText,
           keyboardType: keyboardType,
           decoration: InputDecoration(

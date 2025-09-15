@@ -8,7 +8,9 @@ class CreateSalesAndSoldArticlesTables {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
         date TEXT,
-        total REAL NOT NULL
+        total REAL NOT NULL,
+        payment_method TEXT, 
+        phone TEXT 
       )
     ''');
 

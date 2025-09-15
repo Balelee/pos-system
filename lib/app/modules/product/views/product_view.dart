@@ -60,44 +60,39 @@ class ProductView extends GetView<ProductController> {
                   const Spacer(),
                   if (controller.homeController.user?.status ==
                       UserStatus.cashier)
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        const Icon(Icons.notifications_none, size: 28),
-                        Positioned(
-                          right: -2,
-                          top: -2,
-                          child: Obx(
-                            () => GestureDetector(
-                              child: Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                constraints: const BoxConstraints(
-                                  minWidth: 18,
-                                  minHeight: 18,
-                                ),
-                                child: Text(
-                                  controller.cart.length.toString(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed(
+                          Routes.SALE_CARD,
+                          arguments: controller.cart,
+                        );
+                      },
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          const Icon(Icons.notifications_none, size: 28),
+                          Positioned(
+                              right: -2,
+                              top: -2,
+                              child: Obx(
+                                () => Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  textAlign: TextAlign.center,
+                                  constraints: const BoxConstraints(
+                                      minWidth: 18, minHeight: 18),
+                                  child: Text(
+                                    controller.cart.length.toString(),
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 10),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
-                              ),
-                              onTap: () {
-                                Get.toNamed(
-                                  Routes.SALE_CARD,
-                                  arguments: controller.cart,
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                              )),
+                        ],
+                      ),
                     ),
                 ],
               ),

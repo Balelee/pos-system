@@ -6,6 +6,8 @@ import '../modules/listCashier/bindings/list_cashier_binding.dart';
 import '../modules/listCashier/views/list_cashier_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
+import '../modules/paiement/bindings/paiement_binding.dart';
+import '../modules/paiement/views/paiement_view.dart';
 import '../modules/product/bindings/product_binding.dart';
 import '../modules/product/views/product_view.dart';
 import '../modules/register/bindings/register_binding.dart';
@@ -59,6 +61,11 @@ class AppPages {
       name: _Paths.SALE_HISTORIQUE,
       page: () => const SaleHistoriqueView(),
       binding: SaleHistoriqueBinding(),
+    ),
+    GetPage(
+      name: _Paths.PAIEMENT,
+      page: () => const PaiementView(),
+      binding: PaiementBinding(),
     ),
   ];
 }

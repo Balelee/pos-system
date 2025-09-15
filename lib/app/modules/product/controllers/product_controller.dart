@@ -104,7 +104,6 @@ class ProductController extends GetxController {
   }
 
   int get totalItems => articles.fold(0, (sum, a) => sum + (a.quantity ?? 0));
-
   double get totalPrice => articles.fold(
       0, (sum, a) => sum + ((a.unit_price ?? 0) * (a.quantity ?? 0)));
 

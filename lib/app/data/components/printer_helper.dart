@@ -24,83 +24,70 @@ class PrintService {
       bytes += generator.text(
         'RECU DE VENTE',
         styles: PosStyles(
-          align: PosAlign.center,
-          bold: true,
-          height: PosTextSize.size1,
-          width: PosTextSize.size1,
-        ),
+            align: PosAlign.center,
+            bold: true,
+            height: PosTextSize.size1,
+            width: PosTextSize.size1,
+            fontType: PosFontType.fontA),
       );
       bytes += generator.hr(ch: '=', linesAfter: 0);
       bytes += generator.text(
-        "Vendeur : ${sale.user?.username ?? ''}",
-        styles: PosStyles(height: PosTextSize.size1, width: PosTextSize.size1),
+        "Vendeur: ${sale.user?.username ?? ''}",
+        styles: PosStyles(
+            height: PosTextSize.size1,
+            width: PosTextSize.size1,
+            fontType: PosFontType.fontB),
       );
+      bytes += generator.feed(1);
       bytes += generator.text(
-        "Date   : ${DateFormat('dd-MM-yyyy HH:mm').format(sale.date!)}",
-        styles: PosStyles(height: PosTextSize.size1, width: PosTextSize.size1),
+        "Date:${DateFormat('dd/MM/yyyy HH:mm').format(sale.date!)}",
+        styles: PosStyles(
+            height: PosTextSize.size1,
+            width: PosTextSize.size1,
+            fontType: PosFontType.fontB),
       );
-
+      bytes += generator.feed(1);
+      bytes += generator.text(
+        "Paiement:${sale.paymentMethod.toString()}",
+        styles: PosStyles(
+            height: PosTextSize.size1,
+            width: PosTextSize.size1,
+            fontType: PosFontType.fontB),
+      );
       bytes += generator.hr();
       for (var sold in sale.soldArticles) {
-        bytes += generator.row([
-          PosColumn(
-            text: sold.article?.label ?? '',
-            width: 6,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1),
-          ),
-          PosColumn(
-            text: "X${sold.quantity}",
-            width: 3,
-            styles: PosStyles(
-              align: PosAlign.center,
+        bytes += generator.text(
+          "${(sold.article?.label ?? '').padRight(10)}  X${sold.quantity}  ${(sold.quantity * sold.article!.unit_price!).toStringAsFixed(0)}",
+          styles: PosStyles(
               height: PosTextSize.size1,
               width: PosTextSize.size1,
-            ),
-          ),
-          PosColumn(
-            text:
-                "${(sold.quantity * sold.article!.unit_price!).toStringAsFixed(0)}",
-            width: 3,
-            styles: PosStyles(
-              align: PosAlign.right,
-              height: PosTextSize.size1,
-              width: PosTextSize.size1,
-            ),
-          ),
-        ]);
+              fontType: PosFontType.fontB),
+        );
+        bytes += generator.feed(1);
       }
 
       bytes += generator.hr(ch: '-', linesAfter: 0);
-
-      // Total
       bytes += generator.text(
-        "TOTAL : ${sale.total.toStringAsFixed(0)} CFA",
+        "TOTAL: ${sale.total.toStringAsFixed(0)} CFA",
         styles: PosStyles(
-          bold: true,
-          align: PosAlign.right,
-          height: PosTextSize.size1, // un peu plus grand pour le total
-          width: PosTextSize.size1,
-        ),
+            bold: true,
+            align: PosAlign.right,
+            height: PosTextSize.size1,
+            width: PosTextSize.size1,
+            fontType: PosFontType.fontB),
       );
-
       bytes += generator.feed(1);
-
-      // Message de remerciement
       bytes += generator.text(
         "Merci pour votre achat !",
         styles: PosStyles(
-          align: PosAlign.center,
-          bold: true,
-          height: PosTextSize.size1,
-          width: PosTextSize.size1,
-        ),
+            align: PosAlign.center,
+            bold: true,
+            height: PosTextSize.size1,
+            width: PosTextSize.size1,
+            fontType: PosFontType.fontA),
       );
-
       bytes += generator.feed(2);
       bytes += generator.cut();
-
-      // Envoi à l’imprimante
       await bluetooth.writeBytes(Uint8List.fromList(bytes));
     } catch (e) {
       throw Exception("Erreur d’impression: $e");

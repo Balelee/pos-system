@@ -6,16 +6,21 @@ class Sale {
   final int? user_id;
   final DateTime? date;
   final double total;
+  final String? paymentMethod;
+  final String? phone;
   User? user;
   List<Soldarticle> soldArticles;
 
-  Sale(
-      {this.id,
-      this.user_id,
-      required this.date,
-      required this.total,
-      this.soldArticles = const [],
-      this.user});
+  Sale({
+    this.id,
+    this.user_id,
+    required this.date,
+    required this.total,
+    this.paymentMethod,
+    this.phone,
+    this.soldArticles = const [],
+    this.user,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -23,6 +28,8 @@ class Sale {
       'user_id': user_id,
       'date': date?.toIso8601String(),
       'total': total,
+      'payment_method': paymentMethod,
+      'phone': phone,
     };
   }
 
@@ -32,6 +39,8 @@ class Sale {
       user_id: map['user_id'],
       date: DateTime.parse(map['date']),
       total: (map['total'] ?? 0).toDouble(),
+      paymentMethod: map['payment_method'],
+      phone: map['phone'],
       user: map['user'] != null ? User.fromMap(map['user']) : null,
       soldArticles: [],
     );

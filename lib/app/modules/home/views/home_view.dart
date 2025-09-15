@@ -139,6 +139,9 @@ class HomeView extends GetView<HomeController> {
                     color: Colors.amber.shade400,
                     iconquicard: Colors.amber.shade400,
                     arrowColor: Colors.amber.shade400,
+                    onTap: () {
+                      Get.toNamed(Routes.PAIEMENT);
+                    },
                   ),
                   if (controller.user?.status == UserStatus.admin)
                     QuickAccessCard(
