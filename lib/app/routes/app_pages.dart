@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/configuration/bindings/configuration_binding.dart';
+import '../modules/configuration/views/configuration_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/listCashier/bindings/list_cashier_binding.dart';
@@ -66,6 +68,11 @@ class AppPages {
       name: _Paths.PAIEMENT,
       page: () => const PaiementView(),
       binding: PaiementBinding(),
+    ),
+    GetPage(
+      name: _Paths.CONFIGURATION,
+      page: () => const ConfigurationView(),
+      binding: ConfigurationBinding(),
     ),
   ];
 }

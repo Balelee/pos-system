@@ -21,39 +21,25 @@ class LoginController extends GetxController {
         passwordController.text,
       );
       if (user != null) {
-        Future.delayed(Duration(seconds: 3), () {
-          Toast.toast(
-            title: Text("Connexion réussie"),
-            description: "Bienvenue, ${user.username}!",
-            type: ToastificationType.success,
-            style: ToastificationStyle.fillColored,
-            alignment: Alignment.topRight,
-          );
-        });
-
-        await Future.delayed(Duration(seconds: 5));
-        Get.toNamed(
-          AppPages.HOME,
-          arguments: user,
+        Toast.toast(
+          title: const Text("Connexion réussie"),
+          description: "Bienvenue, ${user.username}!",
+          type: ToastificationType.success,
+          style: ToastificationStyle.fillColored,
+          alignment: Alignment.topRight,
         );
+        await Future.delayed(const Duration(seconds: 2));
+        Get.offAllNamed(AppPages.HOME, arguments: user);
         usernameController.clear();
         passwordController.clear();
       } else {
         Toast.toast(
-          title: Text("Identifiants incorrects"),
-          description:
-              "Veuillez vérifier votre nom d'utilisateur et mot de passe.",
+          title: const Text("Identifiants incorrects"),
+          description: "Veuillez vérifier vos identifiants.",
           type: ToastificationType.error,
           style: ToastificationStyle.fillColored,
         );
       }
-    } catch (e) {
-      Toast.toast(
-        title: Text("Erreur inconnu"),
-        description: "Une erreur est survenue lors de la connexion: $e",
-        type: ToastificationType.error,
-        style: ToastificationStyle.fillColored,
-      );
     } finally {
       isLoading.value = false;
     }
@@ -62,8 +48,7 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    usernameController.text = "aymard";
-    passwordController.text = "12345";
+  
   }
 
   @override

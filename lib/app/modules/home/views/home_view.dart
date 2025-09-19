@@ -152,6 +152,17 @@ class HomeView extends GetView<HomeController> {
                       arrowColor: Colors.blueGrey.shade400,
                       subTitles: {"Ajouter un caissier": "bottomsheet"},
                     ),
+                  if (controller.user?.status == UserStatus.admin)
+                    QuickAccessCard(
+                      icon: Icons.payment,
+                      title: "Configuration",
+                      color: Colors.purple.shade400,
+                      iconquicard: Colors.purple.shade400,
+                      arrowColor: Colors.purple.shade400,
+                      onTap: () {
+                        Get.toNamed(Routes.CONFIGURATION);
+                      },
+                    ),
                 ],
               ),
             ),

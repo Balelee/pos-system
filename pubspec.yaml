@@ -42,6 +42,7 @@ dependencies:
   intl: ^0.18.1
   esc_pos_utils: ^1.1.0
   blue_thermal_printer: ^1.2.3
+  image: ^3.3.0
 
 dev_dependencies:
   flutter_test:

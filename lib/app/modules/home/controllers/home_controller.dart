@@ -73,15 +73,11 @@ class HomeController extends GetxController {
   }
 
   Future<void> logout() async {
-    loginController.isLoading.value = true;
-    try {
-      await userRepository.logoutUser(user!.id!);
-      Get.toNamed(AppPages.LOGIN);
-      loginController.isLoading.value = false;
-    } catch (e) {
-      loginController.isLoading.value = false;
-      print("Erreur lors de la déconnexion : $e");
+    final currentUser = await userRepository.getCurrentUser();
+    if (currentUser != null && currentUser.id != null) {
+      await userRepository.logoutUser(currentUser.id!);
     }
+    Get.offAllNamed(AppPages.LOGIN);
   }
 
   Future<void> sessionsCashier() async {

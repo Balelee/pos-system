@@ -1,14 +1,20 @@
-import 'dart:typed_data';
+import 'dart:io';
+
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:pos/app/data/database/model_repository/configuration_repository.dart';
 import 'package:pos/app/models/sale.dart';
+import 'package:image/image.dart' as img;
 
 class PrintService {
   final BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
+  final configRepo = CompanyRepository();
 
   Future<void> printSale(Sale sale) async {
     try {
+      final config = await configRepo.getCompany();
       bool? isConnected = await bluetooth.isConnected;
       if (isConnected == true) {
         await bluetooth.disconnect();
@@ -21,6 +27,24 @@ class PrintService {
       final profile = await CapabilityProfile.load();
       final generator = Generator(PaperSize.mm80, profile);
       List<int> bytes = [];
+      if (config?.logoPath != null && config!.logoPath!.isNotEmpty) {
+        try {
+          final file = File(config.logoPath!);
+          if (await file.exists()) {
+            final Uint8List logoBytes = await file.readAsBytes();
+            final img.Image? logoImage = img.decodeImage(logoBytes);
+            if (logoImage != null) {
+              final img.Image resizedLogo = img.copyResize(
+                logoImage,
+                width: 60,
+                height: 60,
+              );
+              bytes += generator.imageRaster(resizedLogo);
+            }
+          }
+        } catch (e) {}
+      }
+      bytes += generator.feed(1);
       bytes += generator.text(
         'RECU DE VENTE',
         styles: PosStyles(
@@ -85,6 +109,14 @@ class PrintService {
             height: PosTextSize.size1,
             width: PosTextSize.size1,
             fontType: PosFontType.fontA),
+      );
+      bytes += generator.feed(1);
+      bytes += generator.text(
+        "Contact: ${config?.phone ?? ''}",
+        styles: PosStyles(
+            align: PosAlign.center,
+            height: PosTextSize.size1,
+            width: PosTextSize.size1),
       );
       bytes += generator.feed(2);
       bytes += generator.cut();

@@ -11,6 +11,7 @@ abstract class Routes {
   static const SALE_CARD = _Paths.SALE_CARD;
   static const SALE_HISTORIQUE = _Paths.SALE_HISTORIQUE;
   static const PAIEMENT = _Paths.PAIEMENT;
+  static const CONFIGURATION = _Paths.CONFIGURATION;
 }
 
 abstract class _Paths {
@@ -23,4 +24,5 @@ abstract class _Paths {
   static const SALE_CARD = '/sale-card';
   static const SALE_HISTORIQUE = '/sale-historique';
   static const PAIEMENT = '/paiement';
+  static const CONFIGURATION = '/configuration';
 }
