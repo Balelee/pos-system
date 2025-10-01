@@ -4,6 +4,8 @@ import '../modules/configuration/bindings/configuration_binding.dart';
 import '../modules/configuration/views/configuration_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/licence/bindings/licence_binding.dart';
+import '../modules/licence/views/licence_view.dart';
 import '../modules/listCashier/bindings/list_cashier_binding.dart';
 import '../modules/listCashier/views/list_cashier_view.dart';
 import '../modules/login/bindings/login_binding.dart';
@@ -27,6 +29,7 @@ class AppPages {
   static const LOGIN = Routes.LOGIN;
   static const HOME = Routes.HOME;
   static const REGISTER = Routes.REGISTER;
+  static const LICENCE = Routes.LICENCE;
 
   static final routes = [
     GetPage(
@@ -73,6 +76,11 @@ class AppPages {
       name: _Paths.CONFIGURATION,
       page: () => const ConfigurationView(),
       binding: ConfigurationBinding(),
+    ),
+    GetPage(
+      name: _Paths.LICENCE,
+      page: () => const LicenceView(),
+      binding: LicenceBinding(),
     ),
   ];
 }
