@@ -174,6 +174,36 @@ class UserProfileView extends GetView<HomeController> {
                     )
                   : SizedBox.shrink(),
               SizedBox(
+                height: 14,
+              ),
+              controller.user?.status == UserStatus.admin
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ParagraphText(
+                          text: "Licence expiration:",
+                          type: ParagraphType.bodyText1,
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ParagraphText(
+                            text:
+                                "${controller.licenceController.expirationDate}",
+                            color: Colors.white,
+                            type: ParagraphType.bodyText2,
+                          ),
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              SizedBox(
                 height: 12,
               ),
               GestureDetector(

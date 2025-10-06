@@ -17,6 +17,14 @@ class LoginView extends GetView<LoginController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  "images/logo.png",
+                  width: 80,
+                ),
+              ),
+              SizedBox(height: 20,),
               ParagraphText(
                 text: "Se connecter",
                 type: ParagraphType.bodyText1,

@@ -5,6 +5,7 @@ import 'package:pos/app/data/database/model_repository/user_repository.dart';
 import 'package:pos/app/models/article.dart';
 import 'package:pos/app/models/session.dart';
 import 'package:pos/app/models/user.dart';
+import 'package:pos/app/modules/licence/controllers/licence_controller.dart';
 import 'package:pos/app/modules/login/controllers/login_controller.dart';
 import 'package:pos/app/routes/app_pages.dart';
 import 'package:pos/utils/toast.dart';
@@ -19,6 +20,7 @@ class HomeController extends GetxController {
   List<Article> allArticles = [];
   final articleRepo = ArticleRepository();
   LoginController loginController = Get.put(LoginController());
+  LicenceController licenceController = Get.put(LicenceController());
 
   Future<void> loadCashiers() async {
     try {

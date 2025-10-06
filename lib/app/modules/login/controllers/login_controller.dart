@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:pos/app/data/database/model_repository/user_repository.dart';
 import 'package:pos/app/routes/app_pages.dart';
@@ -12,6 +11,7 @@ class LoginController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   final isLoading = false.obs;
   final userRepository = UserRepository();
+  var currentUser = Rxn<dynamic>();
 
   Future<void> login() async {
     try {
@@ -21,6 +21,7 @@ class LoginController extends GetxController {
         passwordController.text,
       );
       if (user != null) {
+        currentUser.value = user;
         Toast.toast(
           title: const Text("Connexion réussie"),
           description: "Bienvenue, ${user.username}!",
@@ -29,7 +30,7 @@ class LoginController extends GetxController {
           alignment: Alignment.topRight,
         );
         await Future.delayed(const Duration(seconds: 2));
-        Get.offAllNamed(AppPages.HOME, arguments: user);
+        Get.toNamed(AppPages.HOME, arguments: user);
         usernameController.clear();
         passwordController.clear();
       } else {
@@ -43,21 +44,5 @@ class LoginController extends GetxController {
     } finally {
       isLoading.value = false;
     }
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-  
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
   }
 }
