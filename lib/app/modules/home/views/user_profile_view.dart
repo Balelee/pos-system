@@ -190,7 +190,10 @@ class UserProfileView extends GetView<HomeController> {
                             vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.red,
+                            color: controller
+                                    .licenceController.isLicenseValid.value
+                                ? Colors.green
+                                : Colors.red,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: ParagraphText(
