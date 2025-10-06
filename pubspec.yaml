@@ -44,10 +44,16 @@ dependencies:
   blue_thermal_printer: ^1.2.3
   image: ^3.3.0
   flutter_secure_storage: ^9.2.4
+  flutter_launcher_icons: ^0.11.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "images/logo.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
