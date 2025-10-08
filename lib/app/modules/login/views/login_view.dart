@@ -20,11 +20,10 @@ class LoginView extends GetView<LoginController> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.asset(
-                  "images/logo.png",
-                  width: 80,
+                  "images/logo1.png",
+                  width: 180,
                 ),
               ),
-              SizedBox(height: 20,),
               ParagraphText(
                 text: "Se connecter",
                 type: ParagraphType.bodyText1,
