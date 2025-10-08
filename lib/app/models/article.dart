@@ -3,15 +3,16 @@ class Article {
   final int? category_id;
   final String label;
   final double? unit_price;
-  final int? min_quantity;
+  int? quantity;
+  final String? image;
 
-  Article({
-    this.id,
-    this.category_id,
-    required this.label,
-    required this.unit_price,
-    required this.min_quantity,
-  });
+  Article(
+      {this.id,
+      this.category_id,
+      required this.label,
+      required this.unit_price,
+      this.quantity,
+      this.image});
 
   Map<String, dynamic> toMap() {
     return {
@@ -19,16 +20,24 @@ class Article {
       'category_id': category_id,
       'label': label,
       'unit_price': unit_price,
-      'min_quantity': min_quantity,
+      'quantity': quantity,
+      'image': image
     };
   }
 
   factory Article.fromMap(Map<String, dynamic> map) {
     return Article(
       id: map['id'],
+      category_id: map['category_id'],
       label: map['label'],
       unit_price: map['unit_price'],
-      min_quantity: map['min_quantity'],
+      quantity: map['quantity'],
+      image: map['image'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'Article{id: $id, category_id: $category_id, label: $label, unitPrice: $unit_price, quantity: $quantity , image: $image}';
   }
 }

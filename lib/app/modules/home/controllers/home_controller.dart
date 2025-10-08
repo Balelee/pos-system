@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pos/app/data/database/model_repository/article_repository.dart';
 import 'package:pos/app/data/database/model_repository/user_repository.dart';
+import 'package:pos/app/models/article.dart';
 import 'package:pos/app/models/session.dart';
 import 'package:pos/app/models/user.dart';
+import 'package:pos/app/modules/licence/controllers/licence_controller.dart';
 import 'package:pos/app/modules/login/controllers/login_controller.dart';
 import 'package:pos/app/routes/app_pages.dart';
 import 'package:pos/utils/toast.dart';
@@ -13,7 +16,11 @@ class HomeController extends GetxController {
   RxList<User> userCashiers = <User>[].obs;
   RxList<Session> sessionCashier = <Session>[].obs;
   final userRepository = UserRepository();
+  RxList<Article> articles = <Article>[].obs;
+  List<Article> allArticles = [];
+  final articleRepo = ArticleRepository();
   LoginController loginController = Get.put(LoginController());
+  LicenceController licenceController = Get.put(LicenceController());
 
   Future<void> loadCashiers() async {
     try {
@@ -36,49 +43,43 @@ class HomeController extends GetxController {
 
   Future<void> updateCashier(User user) async {
     try {
+      loginController.isLoading.value = true;
       final rowsAffected = await userRepository.updateUser(user);
-
-      if (rowsAffected > 0) {
-        final index = userCashiers.indexWhere((c) => c.id == user.id);
-        if (index != -1) {
-          userCashiers[index] = user;
-          userCashiers.refresh();
-        }
+      if (rowsAffected) {
         Toast.toast(
           title: Text("Mise à jour réussie"),
-          description: "Le caissier a été mis à jour avec succès.",
-          type: ToastificationType.error,
+          description: "L'utilisateur a été mis à jour avec succès.",
+          type: ToastificationType.success,
           style: ToastificationStyle.fillColored,
         );
       } else {
         Toast.toast(
           title: Text("Erreur de mise à jour"),
-          description: " Aucune modification n'a été apportée au caissier.",
+          description: "Aucune modification n'a été apportée.",
           type: ToastificationType.error,
           style: ToastificationStyle.fillColored,
         );
       }
     } catch (e) {
       Toast.toast(
-        title: Text("Erreur inconnu"),
-        description:
-            "Une erreur est survenue lors de la mise à jour du caissier: $e",
+        title: Text("Erreur inconnue"),
+        description: "Une erreur est survenue lors de la mise à jour: $e",
         type: ToastificationType.error,
         style: ToastificationStyle.fillColored,
       );
+    } finally {
+      loginController.isLoading.value = false;
+      loginController.usernameController.clear();
+      loginController.passwordController.clear();
     }
   }
 
   Future<void> logout() async {
-    loginController.isLoading.value = true;
-    try {
-      await userRepository.logoutUser(user!.id!);
-      Get.toNamed(AppPages.LOGIN);
-      loginController.isLoading.value = false;
-    } catch (e) {
-      loginController.isLoading.value = false;
-      print("Erreur lors de la déconnexion : $e");
+    final currentUser = await userRepository.getCurrentUser();
+    if (currentUser != null && currentUser.id != null) {
+      await userRepository.logoutUser(currentUser.id!);
     }
+    Get.offAllNamed(AppPages.LOGIN);
   }
 
   Future<void> sessionsCashier() async {
@@ -88,6 +89,12 @@ class HomeController extends GetxController {
     } catch (e) {
       print("Erreur lors du chargement des sessions des caissiers : $e");
     }
+  }
+
+  Future<void> getAllArticles() async {
+    final listArticle = await articleRepo.getAllArticles();
+    allArticles = listArticle;
+    articles.assignAll(listArticle);
   }
 
   final List<Color> avatarColors = [
@@ -112,6 +119,7 @@ class HomeController extends GetxController {
         loginController.usernameController.text = user!.username;
       });
     }
+    getAllArticles();
   }
 
   @override

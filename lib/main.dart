@@ -13,7 +13,7 @@ void main() async {
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: "POS System",
-        initialRoute: AppPages.LOGIN,
+        initialRoute: AppPages.LICENCE,
         getPages: AppPages.routes,
       ),
     ),

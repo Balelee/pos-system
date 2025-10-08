@@ -1,13 +1,25 @@
 import 'package:get/get.dart';
 
+import '../modules/configuration/bindings/configuration_binding.dart';
+import '../modules/configuration/views/configuration_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/licence/bindings/licence_binding.dart';
+import '../modules/licence/views/licence_view.dart';
 import '../modules/listCashier/bindings/list_cashier_binding.dart';
 import '../modules/listCashier/views/list_cashier_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
+import '../modules/paiement/bindings/paiement_binding.dart';
+import '../modules/paiement/views/paiement_view.dart';
+import '../modules/product/bindings/product_binding.dart';
+import '../modules/product/views/product_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
+import '../modules/saleCard/bindings/sale_card_binding.dart';
+import '../modules/saleCard/views/sale_card_view.dart';
+import '../modules/saleHistorique/bindings/sale_historique_binding.dart';
+import '../modules/saleHistorique/views/sale_historique_view.dart';
 
 part 'app_routes.dart';
 
@@ -17,6 +29,7 @@ class AppPages {
   static const LOGIN = Routes.LOGIN;
   static const HOME = Routes.HOME;
   static const REGISTER = Routes.REGISTER;
+  static const LICENCE = Routes.LICENCE;
 
   static final routes = [
     GetPage(
@@ -38,6 +51,36 @@ class AppPages {
       name: _Paths.LIST_CASHIER,
       page: () => const ListCashierView(),
       binding: ListCashierBinding(),
+    ),
+    GetPage(
+      name: _Paths.PRODUCT,
+      page: () => const ProductView(),
+      binding: ProductBinding(),
+    ),
+    GetPage(
+      name: _Paths.SALE_CARD,
+      page: () => const SaleCardView(),
+      binding: SaleCardBinding(),
+    ),
+    GetPage(
+      name: _Paths.SALE_HISTORIQUE,
+      page: () => const SaleHistoriqueView(),
+      binding: SaleHistoriqueBinding(),
+    ),
+    GetPage(
+      name: _Paths.PAIEMENT,
+      page: () => const PaiementView(),
+      binding: PaiementBinding(),
+    ),
+    GetPage(
+      name: _Paths.CONFIGURATION,
+      page: () => const ConfigurationView(),
+      binding: ConfigurationBinding(),
+    ),
+    GetPage(
+      name: _Paths.LICENCE,
+      page: () => const LicenceView(),
+      binding: LicenceBinding(),
     ),
   ];
 }

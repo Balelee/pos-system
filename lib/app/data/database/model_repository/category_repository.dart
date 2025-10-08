@@ -4,9 +4,10 @@ import 'package:pos/app/models/category.dart';
 class CategoryDao {
   final dbHelper = DatabaseHelper.instance;
 
-  Future<int> insertCategory(Category category) async {
+  Future<Category> insertCategory(Category category) async {
     final db = await dbHelper.database;
-    return await db.insert('categories', category.toMap());
+    final id = await db.insert('categories', category.toMap());
+    return Category(id: id, name: category.name);
   }
 
   Future<List<Category>> getAllCategories() async {
