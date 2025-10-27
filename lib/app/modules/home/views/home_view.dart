@@ -49,14 +49,20 @@ class HomeView extends GetView<HomeController> {
                 crossAxisSpacing: 12,
                 children: [
                   GestureDetector(
-                    child: StatCard(
-                      icon: Icons.monetization_on,
-                      label: "Ventes du jour",
-                      value: "50,000 FCFA",
-                      gradient: LinearGradient(
-                        colors: [Colors.green.shade400, Colors.green.shade200],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                    child: Obx(
+                      () => StatCard(
+                        icon: Icons.monetization_on,
+                        label: "Ventes du jour",
+                        value:
+                            "${controller.totalSales.value.toStringAsFixed(2)} FCFA",
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.green.shade400,
+                            Colors.green.shade200
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                       ),
                     ),
                     onTap: () {
@@ -113,15 +119,31 @@ class HomeView extends GetView<HomeController> {
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Column(
                 children: [
-                  QuickAccessCard(
-                    onTap: () {
-                      Get.toNamed(Routes.PRODUCT);
-                    },
-                    icon: Icons.category,
-                    title: "Produits & Catégories",
-                    color: Colors.deepPurple.shade400,
-                    iconquicard: Colors.deepPurple.shade400,
-                    arrowColor: Colors.deepPurple.shade400,
+                  AbsorbPointer(
+                    absorbing:
+                        !controller.licenceController.hasFeature('G_PRODUIT'),
+                    child: QuickAccessCard(
+                      onTap: () {
+                        if (controller.licenceController
+                            .hasFeature('G_PRODUIT')) {
+                          Get.toNamed(Routes.PRODUCT);
+                        }
+                      },
+                      icon: Icons.category,
+                      title: "Produits & Catégories",
+                      color:
+                          controller.licenceController.hasFeature('G_PRODUIT')
+                              ? Colors.deepPurple.shade400
+                              : Colors.grey.shade400,
+                      iconquicard:
+                          controller.licenceController.hasFeature('G_PRODUIT')
+                              ? Colors.deepPurple.shade400
+                              : Colors.grey.shade400,
+                      arrowColor:
+                          controller.licenceController.hasFeature('G_PRODUIT')
+                              ? Colors.deepPurple.shade400
+                              : Colors.grey.shade400,
+                    ),
                   ),
                   QuickAccessCard(
                     icon: Icons.history,
@@ -144,25 +166,60 @@ class HomeView extends GetView<HomeController> {
                     },
                   ),
                   if (controller.user?.status == UserStatus.admin)
-                    QuickAccessCard(
-                      icon: Icons.supervised_user_circle,
-                      title: "Gestion des caissiers",
-                      color: Colors.blueGrey.shade400,
-                      iconquicard: Colors.blueGrey.shade400,
-                      arrowColor: Colors.blueGrey.shade400,
-                      subTitles: {"Ajouter un caissier": "bottomsheet"},
+                    Tooltip(
+                      message: controller.licenceController
+                              .hasFeature('G_CAISSIER')
+                          ? ""
+                          : "Requiert un pack avec accès Gestion des caissiers",
+                      child: AbsorbPointer(
+                        absorbing: !controller.licenceController
+                            .hasFeature('G_CAISSIER'),
+                        child: QuickAccessCard(
+                          icon: Icons.supervised_user_circle,
+                          title: "Gestion des caissiers",
+                          color: controller.licenceController
+                                  .hasFeature('G_CAISSIER')
+                              ? Colors.blueGrey.shade400
+                              : Colors.grey.shade400,
+                          iconquicard: controller.licenceController
+                                  .hasFeature('G_CAISSIER')
+                              ? Colors.blueGrey.shade400
+                              : Colors.grey.shade400,
+                          arrowColor: controller.licenceController
+                                  .hasFeature('G_CAISSIER')
+                              ? Colors.blueGrey.shade400
+                              : Colors.grey.shade400,
+                          subTitles: {"Ajouter un caissier": "bottomsheet"},
+                        ),
+                      ),
                     ),
                   if (controller.user?.status == UserStatus.admin)
-                    QuickAccessCard(
-                      icon: Icons.payment,
-                      title: "Configuration",
-                      color: Colors.purple.shade400,
-                      iconquicard: Colors.purple.shade400,
-                      arrowColor: Colors.purple.shade400,
-                      onTap: () {
-                        Get.toNamed(Routes.CONFIGURATION);
-                      },
-                    ),
+                    AbsorbPointer(
+                      absorbing: !controller.licenceController
+                          .hasFeature('G_PERSONNALISATION'),
+                      child: QuickAccessCard(
+                        icon: Icons.payment,
+                        title: "Configuration",
+                        color: controller.licenceController
+                                .hasFeature('G_PERSONNALISATION')
+                            ? Colors.purple.shade400
+                            : Colors.grey.shade400,
+                        iconquicard: controller.licenceController
+                                .hasFeature('G_PERSONNALISATION')
+                            ? Colors.purple.shade400
+                            : Colors.grey.shade400,
+                        arrowColor: controller.licenceController
+                                .hasFeature('G_PERSONNALISATION')
+                            ? Colors.purple.shade400
+                            : Colors.grey.shade400,
+                        onTap: () {
+                          if (controller.licenceController
+                              .hasFeature('G_PERSONNALISATION')) {
+                            Get.toNamed(Routes.CONFIGURATION);
+                          }
+                        },
+                      ),
+                    )
                 ],
               ),
             ),

@@ -13,6 +13,7 @@ abstract class Routes {
   static const PAIEMENT = _Paths.PAIEMENT;
   static const CONFIGURATION = _Paths.CONFIGURATION;
   static const LICENCE = _Paths.LICENCE;
+  static const PACK = _Paths.PACK;
 }
 
 abstract class _Paths {
@@ -27,4 +28,5 @@ abstract class _Paths {
   static const PAIEMENT = '/paiement';
   static const CONFIGURATION = '/configuration';
   static const LICENCE = '/licence';
+  static const PACK = '/pack';
 }

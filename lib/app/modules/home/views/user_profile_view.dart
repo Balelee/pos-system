@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pos/app/data/components/bouton/bouton.dart';
 import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
@@ -184,23 +185,27 @@ class UserProfileView extends GetView<HomeController> {
                           text: "Licence expiration:",
                           type: ParagraphType.bodyText1,
                         ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: controller
-                                    .licenceController.isLicenseValid.value
-                                ? Colors.green
-                                : Colors.red,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: ParagraphText(
-                            text:
-                                "${controller.licenceController.expirationDate}",
-                            color: Colors.white,
-                            type: ParagraphType.bodyText2,
+                        Obx(
+                          () => Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: controller
+                                      .licenceController.isLicenseValid.value
+                                  ? Colors.green
+                                  : Colors.red,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Obx(
+                              () => ParagraphText(
+                                text:
+                                    "${DateFormat('dd-MM-yyyy').format(DateTime.parse(controller.licenceController.expirationDate.value))}",
+                                color: Colors.white,
+                                type: ParagraphType.bodyText2,
+                              ),
+                            ),
                           ),
                         ),
                       ],

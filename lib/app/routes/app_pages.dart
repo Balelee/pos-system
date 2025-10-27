@@ -30,6 +30,7 @@ class AppPages {
   static const HOME = Routes.HOME;
   static const REGISTER = Routes.REGISTER;
   static const LICENCE = Routes.LICENCE;
+  static const PACK = Routes.PACK;
 
   static final routes = [
     GetPage(
@@ -82,5 +83,6 @@ class AppPages {
       page: () => const LicenceView(),
       binding: LicenceBinding(),
     ),
+   
   ];
 }

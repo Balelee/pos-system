@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/data/components/textField/textField.dart';
 import '../controllers/licence_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LicenceView extends GetView<LicenceController> {
   const LicenceView({super.key});
@@ -22,15 +24,16 @@ class LicenceView extends GetView<LicenceController> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          // ✅ empêche l’overflow
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 40),
-              const ParagraphText(
-                text: "Entrez votre clé de licence",
+              Center(
+                child: const ParagraphText(
+                  text: "Entrez votre clé de licence",
+                ),
               ),
               const SizedBox(height: 20),
               CustomTextField(
@@ -44,6 +47,33 @@ class LicenceView extends GetView<LicenceController> {
                 ),
                 controller: controller.licenseTextController,
               ),
+              SizedBox(height: 4),
+              RichText(
+                text: TextSpan(
+                  text: "Pour accéder au pack, ",
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13),
+                  children: [
+                    TextSpan(
+                      text: "cliquez ici pour la souscription.",
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () async {
+                          controller.startClipboardListener();
+                          final url = Uri.parse(
+                              "http://192.168.11.105:8000/welcome#pricing");
+                          await launchUrl(url,
+                              mode: LaunchMode.externalApplication);
+                        },
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 20),
               Obx(
                 () => CustomButton(
@@ -51,7 +81,7 @@ class LicenceView extends GetView<LicenceController> {
                   isLoading: controller.isLoading.value,
                   text: "Activer",
                   onPressed: () {
-                    controller.activateLicense();
+                    controller.consumeLicence();
                   },
                 ),
               ),
@@ -60,11 +90,13 @@ class LicenceView extends GetView<LicenceController> {
                 onPressed: () {
                   SystemNavigator.pop();
                 },
-                child: const Text(
-                  "Quitter l'application",
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
+                child: Center(
+                  child: const Text(
+                    "Quitter l'application",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

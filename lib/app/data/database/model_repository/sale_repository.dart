@@ -69,4 +69,21 @@ class SaleRepository {
     }
     return sales;
   }
+
+
+  Future<double> getTotalSales() async {
+    final db = await dbProvider.database;
+    try {
+      final result =
+          await db.rawQuery('SELECT SUM(total) as total_sum FROM sales');
+      if (result.isNotEmpty && result.first['total_sum'] != null) {
+        return (result.first['total_sum'] as num).toDouble();
+      }
+      return 0.0;
+    } catch (e) {
+      print("❌ Erreur lors du calcul du total des ventes : $e");
+      return 0.0;
+    }
+  }
+
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pos/app/data/database/model_repository/article_repository.dart';
+import 'package:pos/app/data/database/model_repository/sale_repository.dart';
 import 'package:pos/app/data/database/model_repository/user_repository.dart';
 import 'package:pos/app/models/article.dart';
 import 'package:pos/app/models/session.dart';
@@ -21,6 +22,34 @@ class HomeController extends GetxController {
   final articleRepo = ArticleRepository();
   LoginController loginController = Get.put(LoginController());
   LicenceController licenceController = Get.put(LicenceController());
+  final saleRepo = SaleRepository();
+  RxDouble totalSales = 0.0.obs;
+  
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadCashiers().then((_) {
+      sessionsCashier();
+    });
+    if (user != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        loginController.usernameController.text = user!.username;
+      });
+    }
+    getAllArticles();
+    loadTotalSales(); 
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+  }
 
   Future<void> loadCashiers() async {
     try {
@@ -30,6 +59,17 @@ class HomeController extends GetxController {
       print("Erreur lors du chargement des caissiers : $e");
     }
   }
+
+  Future<void> loadTotalSales() async {
+    try {
+      double total = await saleRepo.getTotalSales();
+      totalSales.value = total;
+    } catch (e) {
+      print("Erreur lors du chargement du total des ventes : $e");
+      totalSales.value = 0.0;
+    }
+  }
+
 
   Future<void> deleteCashier(int id) async {
     try {
@@ -107,28 +147,4 @@ class HomeController extends GetxController {
     Colors.indigo.shade400,
     Colors.pink.shade400,
   ];
-
-  @override
-  void onInit() {
-    super.onInit();
-    loadCashiers().then((_) {
-      sessionsCashier();
-    });
-    if (user != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        loginController.usernameController.text = user!.username;
-      });
-    }
-    getAllArticles();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
 }
