@@ -22,14 +22,6 @@ class LoginController extends GetxController {
       );
       if (user != null) {
         currentUser.value = user;
-        Toast.toast(
-          title: const Text("Connexion réussie"),
-          description: "Bienvenue, ${user.username}!",
-          type: ToastificationType.success,
-          style: ToastificationStyle.fillColored,
-          alignment: Alignment.topRight,
-        );
-        await Future.delayed(const Duration(seconds: 2));
         Get.toNamed(AppPages.HOME, arguments: user);
         usernameController.clear();
         passwordController.clear();

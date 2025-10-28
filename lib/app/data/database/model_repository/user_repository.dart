@@ -75,7 +75,7 @@ class UserRepository {
     return await db.delete('users', where: 'id = ?', whereArgs: [user.id]);
   }
 
- Future<User?> loginUser(String username, String password) async {
+  Future<User?> loginUser(String username, String password) async {
     final db = await dbProvider.database;
     final results = await db.query(
       'users',
@@ -105,8 +105,7 @@ class UserRepository {
     return null;
   }
 
-
- Future<void> logoutUser(int userId) async {
+  Future<void> logoutUser(int userId) async {
     final db = await dbProvider.database;
     await db.update(
       'sessions',
@@ -157,4 +156,13 @@ class UserRepository {
     return null;
   }
 
+  Future<bool> hasActiveSession() async {
+    final db = await dbProvider.database;
+    final result = await db.rawQuery('''
+    SELECT 1 FROM sessions
+    WHERE logout_time IS NULL
+    LIMIT 1
+  ''');
+    return result.isNotEmpty;
+  }
 }

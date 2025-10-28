@@ -24,7 +24,14 @@ class HomeController extends GetxController {
   LicenceController licenceController = Get.put(LicenceController());
   final saleRepo = SaleRepository();
   RxDouble totalSales = 0.0.obs;
-  
+
+  bool get isCassierAuthorized => licenceController.hasFeature('G_CAISSIER');
+  bool get isProductAuthorized => licenceController.hasFeature('G_PRODUIT');
+  bool get isConfigAuthorized =>
+      licenceController.hasFeature('G_PERSONNALISATION');
+  bool get isHistoVenteAuthorized =>
+      licenceController.hasFeature('V_HIST_VENTE');
+  bool get isFactureAuthorized => licenceController.hasFeature('G_FACTURE');
 
   @override
   void onInit() {
@@ -38,7 +45,7 @@ class HomeController extends GetxController {
       });
     }
     getAllArticles();
-    loadTotalSales(); 
+    loadTotalSales();
   }
 
   @override
@@ -69,7 +76,6 @@ class HomeController extends GetxController {
       totalSales.value = 0.0;
     }
   }
-
 
   Future<void> deleteCashier(int id) async {
     try {

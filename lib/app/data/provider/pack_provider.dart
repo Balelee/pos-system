@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pos/app/data/config/env.dart';
+import 'package:pos/app/data/exceptions/api_exception.dart';
 import 'package:pos/app/models/subscription.dart';
 
 class PackProvider {
@@ -27,8 +28,8 @@ class PackProvider {
       return PackSubscribeResponse.fromJson(data);
     } else {
       final error = jsonDecode(response.body);
-      return throw Exception(
-          error['message'] ?? "Erreur lors de la consommation de la licence");
+       throw ApiException(error['message'] ??
+          'Erreur inconnue lors de la consommation de la licence');
     }
   }
 }

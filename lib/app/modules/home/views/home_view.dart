@@ -48,26 +48,29 @@ class HomeView extends GetView<HomeController> {
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
                 children: [
-                  GestureDetector(
-                    child: Obx(
-                      () => StatCard(
-                        icon: Icons.monetization_on,
-                        label: "Ventes du jour",
-                        value:
-                            "${controller.totalSales.value.toStringAsFixed(2)} FCFA",
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.green.shade400,
-                            Colors.green.shade200
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                  AbsorbPointer(
+                    absorbing: !controller.isHistoVenteAuthorized,
+                    child: GestureDetector(
+                      child: Obx(
+                        () => StatCard(
+                          icon: Icons.monetization_on,
+                          label: "Ventes du jour",
+                          value:
+                              "${controller.totalSales.value.toStringAsFixed(2)} FCFA",
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.green.shade400,
+                              Colors.green.shade200
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        Get.toNamed(Routes.SALE_HISTORIQUE);
+                      },
                     ),
-                    onTap: () {
-                      Get.toNamed(Routes.SALE_HISTORIQUE);
-                    },
                   ),
                   GestureDetector(
                     onTap: () {
@@ -92,21 +95,27 @@ class HomeView extends GetView<HomeController> {
                       color: Colors.red.shade400,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      controller.user?.status == UserStatus.admin
-                          ? Get.toNamed(Routes.LIST_CASHIER)
-                          : null;
-                    },
-                    child: Obx(
-                      () => StatCard(
-                        icon: Icons.people,
-                        label: "Caissiers",
-                        value: "${controller.userCashiers.length}",
-                        gradient: LinearGradient(
-                          colors: [Colors.blue.shade400, Colors.blue.shade200],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                  AbsorbPointer(
+                    absorbing: !controller.isCassierAuthorized,
+                    child: GestureDetector(
+                      onTap: () {
+                        controller.user?.status == UserStatus.admin
+                            ? Get.toNamed(Routes.LIST_CASHIER)
+                            : null;
+                      },
+                      child: Obx(
+                        () => StatCard(
+                          icon: Icons.people,
+                          label: "Caissiers",
+                          value: "${controller.userCashiers.length}",
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.blue.shade400,
+                              Colors.blue.shade200
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                         ),
                       ),
                     ),
@@ -120,101 +129,107 @@ class HomeView extends GetView<HomeController> {
               child: Column(
                 children: [
                   AbsorbPointer(
-                    absorbing:
-                        !controller.licenceController.hasFeature('G_PRODUIT'),
+                    absorbing: !controller.isProductAuthorized,
                     child: QuickAccessCard(
                       onTap: () {
-                        if (controller.licenceController
-                            .hasFeature('G_PRODUIT')) {
+                        if (controller.isProductAuthorized) {
                           Get.toNamed(Routes.PRODUCT);
                         }
                       },
                       icon: Icons.category,
                       title: "Produits & Catégories",
-                      color:
-                          controller.licenceController.hasFeature('G_PRODUIT')
-                              ? Colors.deepPurple.shade400
-                              : Colors.grey.shade400,
-                      iconquicard:
-                          controller.licenceController.hasFeature('G_PRODUIT')
-                              ? Colors.deepPurple.shade400
-                              : Colors.grey.shade400,
-                      arrowColor:
-                          controller.licenceController.hasFeature('G_PRODUIT')
-                              ? Colors.deepPurple.shade400
-                              : Colors.grey.shade400,
+                      color: controller.isProductAuthorized
+                          ? Colors.deepPurple.shade400
+                          : Colors.grey.shade400,
+                      iconquicard: controller.isProductAuthorized
+                          ? Colors.deepPurple.shade400
+                          : Colors.grey.shade400,
+                      arrowColor: controller.isProductAuthorized
+                          ? Colors.deepPurple.shade400
+                          : Colors.grey.shade400,
                     ),
                   ),
-                  QuickAccessCard(
-                    icon: Icons.history,
-                    title: "Historique des ventes",
-                    color: Colors.indigo.shade400,
-                    iconquicard: Colors.indigo.shade400,
-                    arrowColor: Colors.indigo.shade400,
-                    onTap: () {
-                      Get.toNamed(Routes.SALE_HISTORIQUE);
-                    },
+                  AbsorbPointer(
+                    absorbing: !controller.isHistoVenteAuthorized,
+                    child: QuickAccessCard(
+                      isAuthorized: controller.isHistoVenteAuthorized,
+                      icon: Icons.history,
+                      title: "Historique des ventes",
+                      color: controller.isHistoVenteAuthorized
+                          ? Colors.indigo.shade400
+                          : Colors.grey.shade400,
+                      iconquicard: controller.isHistoVenteAuthorized
+                          ? Colors.indigo.shade400
+                          : Colors.grey.shade400,
+                      arrowColor: controller.isHistoVenteAuthorized
+                          ? Colors.indigo.shade400
+                          : Colors.grey.shade400,
+                      onTap: () {
+                        if (controller.isHistoVenteAuthorized) {
+                          Get.toNamed(Routes.SALE_HISTORIQUE);
+                        }
+                      },
+                    ),
                   ),
-                  QuickAccessCard(
-                    icon: Icons.payment,
-                    title: "Paiements",
-                    color: Colors.amber.shade400,
-                    iconquicard: Colors.amber.shade400,
-                    arrowColor: Colors.amber.shade400,
-                    onTap: () {
-                      Get.toNamed(Routes.PAIEMENT);
-                    },
+                  AbsorbPointer(
+                    absorbing: !controller.isFactureAuthorized,
+                    child: QuickAccessCard(
+                      isAuthorized: controller.isFactureAuthorized,
+                      icon: Icons.payment,
+                      title: "Paiements",
+                      color: controller.isFactureAuthorized
+                          ? Colors.amber.shade400
+                          : Colors.grey.shade400,
+                      iconquicard: controller.isFactureAuthorized
+                          ? Colors.amber.shade400
+                          : Colors.grey.shade400,
+                      arrowColor: controller.isFactureAuthorized
+                          ? Colors.amber.shade400
+                          : Colors.grey.shade400,
+                      onTap: () {
+                        if (controller.isFactureAuthorized) {
+                          Get.toNamed(Routes.PAIEMENT);
+                        }
+                      },
+                    ),
                   ),
                   if (controller.user?.status == UserStatus.admin)
-                    Tooltip(
-                      message: controller.licenceController
-                              .hasFeature('G_CAISSIER')
-                          ? ""
-                          : "Requiert un pack avec accès Gestion des caissiers",
-                      child: AbsorbPointer(
-                        absorbing: !controller.licenceController
-                            .hasFeature('G_CAISSIER'),
-                        child: QuickAccessCard(
-                          icon: Icons.supervised_user_circle,
-                          title: "Gestion des caissiers",
-                          color: controller.licenceController
-                                  .hasFeature('G_CAISSIER')
-                              ? Colors.blueGrey.shade400
-                              : Colors.grey.shade400,
-                          iconquicard: controller.licenceController
-                                  .hasFeature('G_CAISSIER')
-                              ? Colors.blueGrey.shade400
-                              : Colors.grey.shade400,
-                          arrowColor: controller.licenceController
-                                  .hasFeature('G_CAISSIER')
-                              ? Colors.blueGrey.shade400
-                              : Colors.grey.shade400,
-                          subTitles: {"Ajouter un caissier": "bottomsheet"},
-                        ),
+                    AbsorbPointer(
+                      absorbing: !controller.isCassierAuthorized,
+                      child: QuickAccessCard(
+                        isAuthorized: controller.isCassierAuthorized,
+                        icon: Icons.supervised_user_circle,
+                        title: "Gestion des caissiers",
+                        color: controller.isCassierAuthorized
+                            ? Colors.blueGrey.shade400
+                            : Colors.grey.shade400,
+                        iconquicard: controller.isCassierAuthorized
+                            ? Colors.blueGrey.shade400
+                            : Colors.grey.shade400,
+                        arrowColor: controller.isCassierAuthorized
+                            ? Colors.blueGrey.shade400
+                            : Colors.grey.shade400,
+                        subTitles: {"Ajouter un caissier": "bottomsheet"},
                       ),
                     ),
                   if (controller.user?.status == UserStatus.admin)
                     AbsorbPointer(
-                      absorbing: !controller.licenceController
-                          .hasFeature('G_PERSONNALISATION'),
+                      absorbing: !controller.isConfigAuthorized,
                       child: QuickAccessCard(
+                        isAuthorized: controller.isConfigAuthorized,
                         icon: Icons.payment,
                         title: "Configuration",
-                        color: controller.licenceController
-                                .hasFeature('G_PERSONNALISATION')
+                        color: controller.isConfigAuthorized
                             ? Colors.purple.shade400
                             : Colors.grey.shade400,
-                        iconquicard: controller.licenceController
-                                .hasFeature('G_PERSONNALISATION')
+                        iconquicard: controller.isConfigAuthorized
                             ? Colors.purple.shade400
                             : Colors.grey.shade400,
-                        arrowColor: controller.licenceController
-                                .hasFeature('G_PERSONNALISATION')
+                        arrowColor: controller.isConfigAuthorized
                             ? Colors.purple.shade400
                             : Colors.grey.shade400,
                         onTap: () {
-                          if (controller.licenceController
-                              .hasFeature('G_PERSONNALISATION')) {
+                          if (controller.isConfigAuthorized) {
                             Get.toNamed(Routes.CONFIGURATION);
                           }
                         },
@@ -305,6 +320,7 @@ class QuickAccessCard extends StatelessWidget {
   final Color color;
   final Color iconquicard;
   final Color arrowColor;
+  final bool isAuthorized;
 
   const QuickAccessCard({
     Key? key,
@@ -315,32 +331,40 @@ class QuickAccessCard extends StatelessWidget {
     this.color = Colors.blueGrey,
     this.iconquicard = Colors.white,
     this.arrowColor = Colors.white,
+    this.isAuthorized = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (subTitles == null || subTitles!.isEmpty) {
       return Card(
-        margin: EdgeInsets.symmetric(vertical: 4),
+        margin: const EdgeInsets.symmetric(vertical: 4),
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: color, width: 1)),
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: color, width: 1),
+        ),
         elevation: 4,
         child: ListTile(
-          leading: Icon(
-            icon,
-            color: iconquicard,
+          leading: Icon(icon, color: iconquicard),
+          title: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          title: Text(title,
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
-          trailing: Icon(Icons.arrow_forward_ios, color: arrowColor, size: 16),
-          onTap: onTap,
+          trailing: Icon(
+            isAuthorized ? Icons.arrow_forward_ios : Icons.lock,
+            color: isAuthorized ? arrowColor : Colors.grey,
+            size: 20,
+          ),
+          onTap: isAuthorized ? onTap : null,
         ),
       );
     }
+
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: color, width: 1),
@@ -350,32 +374,40 @@ class QuickAccessCard extends StatelessWidget {
         leading: Icon(icon, color: iconquicard),
         title: Text(
           title,
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+          style:
+              const TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+        ),
+        trailing: Icon(
+          isAuthorized ? null : Icons.lock,
+          color: isAuthorized ? arrowColor : Colors.grey,
+          size: 20,
         ),
         children: subTitles!.entries.map((entry) {
           return ListTile(
             title: Text(entry.key),
-            contentPadding: EdgeInsets.only(left: 60, right: 16),
-            onTap: () {
-              if (entry.value == "bottomsheet") {
-                Get.put(RegisterController());
-                Get.bottomSheet(
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15),
-                      ),
-                    ),
-                    child: RegisterView(),
-                  ),
-                );
-              } else {
-                Get.toNamed(entry.value);
-              }
-            },
+            contentPadding: const EdgeInsets.only(left: 60, right: 16),
+            onTap: isAuthorized
+                ? () {
+                    if (entry.value == "bottomsheet") {
+                      Get.put(RegisterController());
+                      Get.bottomSheet(
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              topRight: Radius.circular(15),
+                            ),
+                          ),
+                          child: RegisterView(),
+                        ),
+                      );
+                    } else {
+                      Get.toNamed(entry.value);
+                    }
+                  }
+                : null,
           );
         }).toList(),
       ),

@@ -183,7 +183,7 @@ class UserProfileView extends GetView<HomeController> {
                       children: [
                         ParagraphText(
                           text: "Licence expiration:",
-                          type: ParagraphType.bodyText1,
+                          type: ParagraphType.bodyText2,
                         ),
                         Obx(
                           () => Container(
@@ -201,7 +201,7 @@ class UserProfileView extends GetView<HomeController> {
                             child: Obx(
                               () => ParagraphText(
                                 text:
-                                    "${DateFormat('dd-MM-yyyy').format(DateTime.parse(controller.licenceController.expirationDate.value))}",
+                                    "${DateFormat('dd-MM-yyyy à HH:mm:ss').format(DateTime.parse(controller.licenceController.expirationDate.value.toString()))}",
                                 color: Colors.white,
                                 type: ParagraphType.bodyText2,
                               ),

@@ -2,164 +2,128 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:intl/intl.dart';
-import 'package:pos/app/data/provider/pack_provider.dart';
+import 'package:pos/app/data/database/model_repository/user_repository.dart';
+import 'package:pos/app/data/repository/licence_repository.dart';
 import 'package:pos/app/routes/app_pages.dart';
-import 'package:pos/app/modules/login/controllers/login_controller.dart';
-import 'package:pos/utils/toast.dart';
-import 'package:toastification/toastification.dart';
 
 class LicenceController extends GetxController {
+  final LicenceRepository _repository = LicenceRepository();
+  final UserRepository _userRepository = UserRepository();
+  var errorMessage = "".obs;
   final licenseTextController = TextEditingController();
-  var isLoading = false.obs;
-  var isLicenseValid = true.obs;
-  var expirationDate = "".obs;
-  final box = GetStorage();
-  final LoginController loginController = Get.put(LoginController());
-  final PackProvider _provider = PackProvider();
-  Timer? _expiryTimer;
-  Timer? clipboardTimer;
+  final isLoading = false.obs;
+  final isLicenseValid = false.obs;
+  final expirationDate = Rxn<DateTime>();
+  Timer? _clipboardTimer;
 
   @override
   void onInit() {
     super.onInit();
-    loadSavedLicense();
-    _expiryTimer = Timer.periodic(const Duration(days: 1), (timer) {
-      _checkAndHandleExpiration();
-    });
+    _initialize();
   }
 
   @override
   void onClose() {
-    _expiryTimer?.cancel();
+    _clipboardTimer?.cancel();
+    licenseTextController.dispose();
     super.onClose();
   }
 
+  Future<void> _initialize() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _loadSavedLicence();
+    });
+  }
+
+  Future<void> _loadSavedLicence() async {
+    final saved = await _repository.getSavedLicence();
+    if (saved != null) {
+      expirationDate.value = saved.expirationDate;
+      isLicenseValid.value = saved.isValid;
+      if (saved.isValid) {
+        final hasSession = await _userRepository.hasActiveSession();
+        if (hasSession) {
+          final currentUser = await _userRepository.getCurrentUser();
+          if (currentUser != null) {
+            Get.offAllNamed(
+              AppPages.HOME,
+               arguments: currentUser,
+            );
+          } else {
+            Get.offAllNamed(AppPages.LOGIN);
+          }
+        } else {
+          Get.offAllNamed(AppPages.LOGIN);
+        }
+      }
+    } else {
+      isLicenseValid.value = false;
+    }
+  }
+
   void startClipboardListener() {
-    clipboardTimer = Timer.periodic(Duration(seconds: 1), (_) async {
-      final clipboardData = await Clipboard.getData('text/plain');
-      final text = clipboardData?.text ?? '';
-      if (RegExp(
-              r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')
-          .hasMatch(text)) {
+    _clipboardTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
+      final text = (await Clipboard.getData('text/plain'))?.text?.trim() ?? '';
+      if (_isValidLicenceKey(text)) {
         licenseTextController.text = text;
-        clipboardTimer?.cancel();
+        _clipboardTimer?.cancel();
       }
     });
   }
 
-  Future<void> loadSavedLicense() async {
-    final savedKey = box.read('licence_key');
-    final expiredAt = box.read('expired_at');
-    if (expiredAt != null) {
-      expirationDate.value = expiredAt;
-      final expDate = DateTime.tryParse(expiredAt);
-      if (expDate != null && expDate.isAfter(DateTime.now())) {
-        isLicenseValid.value = true;
-      } else {
-        isLicenseValid.value = false;
-      }
-    } else {
-      isLicenseValid.value = false;
-    }
-    await Future.delayed(const Duration(milliseconds: 300));
-    if (savedKey == null ||
-        expiredAt == null ||
-        DateTime.tryParse(expiredAt)?.isBefore(DateTime.now()) == true) {
-      Get.toNamed(AppPages.LICENCE);
-    } else {
-      Get.toNamed(AppPages.LOGIN);
-    }
+  bool _isValidLicenceKey(String text) {
+    return RegExp(
+      r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+    ).hasMatch(text);
   }
 
-  Future<void> consumeLicence([String? keyInput]) async {
-    final key = keyInput ?? licenseTextController.text.trim();
+  Future<void> consumeLicence() async {
+    final key = licenseTextController.text.trim();
     if (key.isEmpty) {
-      Toast.toast(
-        title: const Text("Erreur"),
-        description: "Veuillez entrer une clé de licence",
-        type: ToastificationType.error,
-        style: ToastificationStyle.fillColored,
-      );
+      errorMessage.value = "Veuillez entrer une clé de licence";
+      return;
+    }
+    if (!_isValidLicenceKey(key)) {
+      errorMessage.value = "Clé de licence invalide";
       return;
     }
     try {
       isLoading.value = true;
-      final packResponse =
-          await _provider.consumeLicence(key).catchError((error) {
-        Toast.toast(
-          title: const Text("Erreur"),
-          description: error.toString(),
-          type: ToastificationType.error,
-          style: ToastificationStyle.fillColored,
-        );
-        // ignore: invalid_return_type_for_catch_error
-        return null;
-      });
-      final subscription = packResponse.subscription;
-      await box.write('licence_key', subscription.licence);
-      await box.write('consumed_at', subscription.consumedAt);
-      await box.write('expired_at', subscription.expiredAt);
-      await box.write('features', subscription.features);
-      isLicenseValid.value = true;
+      final subscription = await _repository.consumeLicence(key);
       expirationDate.value = subscription.expiredAt;
+      isLicenseValid.value = true;
+      errorMessage.value = "";
       Get.defaultDialog(
-        titlePadding: const EdgeInsets.all(8),
-        contentPadding: const EdgeInsets.all(8),
+        barrierDismissible: false,
         title: "Bravo 🎉",
         content: Text(
-          "Licence activée jusqu’au : ${DateFormat('dd-MM-yyyy').format(DateTime.parse(subscription.expiredAt))}",
-          style: const TextStyle(
-            color: Colors.green,
-            fontWeight: FontWeight.bold,
-            fontSize: 13,
-          ),
-        ),
-        titleStyle: const TextStyle(
-          color: Colors.green,
-          fontWeight: FontWeight.bold,
+          "Licence activée jusqu’au : ${subscription.expiredAtFormatted}",
+          style:
+              const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
         ),
         confirm: ElevatedButton(
-          onPressed: () async {
-            await Future.delayed(const Duration(milliseconds: 300));
-            Get.toNamed(AppPages.LOGIN);
-          },
+          onPressed: () => Get.offAllNamed(AppPages.LOGIN),
           child: const Text("Se connecter maintenant"),
         ),
       );
     } catch (e) {
-      isLicenseValid.value = false;
-      expirationDate.value = "";
+      errorMessage.value = e.toString();
     } finally {
       isLoading.value = false;
     }
   }
 
-  void _checkAndHandleExpiration() async {
-    if (expirationDate.value.isEmpty) return;
-    final today = DateTime.now();
-    final exp = DateTime.tryParse(expirationDate.value);
-    if (exp != null && today.isAfter(exp)) {
-      isLicenseValid.value = false;
-      await box.remove('licence_key');
-      await box.remove('consumed_at');
-      await box.remove('expired_at');
-      Toast.toast(
-        title: const Text("Licence expirée"),
-        description: "Veuillez entrer une nouvelle licence",
-        type: ToastificationType.error,
-        style: ToastificationStyle.fillColored,
-      );
-      _expiryTimer?.cancel();
-      Get.offAllNamed(AppPages.LICENCE);
-    }
+  bool get isExpired {
+    final exp = expirationDate.value;
+    return exp == null || DateTime.now().isAfter(exp);
   }
 
-  List<String> getFeatures() {
-    return box.read<List<dynamic>>('features')?.cast<String>() ?? [];
+  Future<void> clearLicence() async {
+    isLicenseValid.value = false;
+    expirationDate.value = null;
+    await _repository.clearLicence();
   }
-  bool hasFeature(String feature) {
-    return getFeatures().contains(feature);
-  }
+
+  List<String> get features => _repository.getFeatures();
+  bool hasFeature(String feature) => features.contains(feature);
 }

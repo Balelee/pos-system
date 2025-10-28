@@ -1,12 +1,14 @@
+import 'package:intl/intl.dart';
+
 class Subscription {
   final int id;
   final String packKey;
   final String licence;
-  final String createdAt;
-  final String updatedAt;
-  final String consumedAt;
-  final String expiredAt;
-  final List<String> features; 
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final DateTime? consumedAt;
+  final DateTime? expiredAt;
+  final List<String> features;
 
   Subscription({
     required this.id,
@@ -20,21 +22,17 @@ class Subscription {
   });
 
   factory Subscription.fromJson(Map<String, dynamic> json) {
-   List<String> featuresList = [];
-    if (json['features'] != null) {
-      // Assure-toi que c'est bien une liste
-      featuresList = List<String>.from(json['features']);
-    }
-
     return Subscription(
       id: json['id'] ?? 0,
       packKey: json['pack_key'] ?? '',
       licence: json['licence'] ?? '',
-      createdAt: json['created_at'] ?? '',
-      updatedAt: json['updated_at'] ?? '',
-      consumedAt: json['consumed_at'] ?? '',
-      expiredAt: json['expired_at'] ?? '',
-      features: featuresList,
+      createdAt: _parseDate(json['created_at']),
+      updatedAt: _parseDate(json['updated_at']),
+      consumedAt: _parseDate(json['consumed_at']),
+      expiredAt: _parseDate(json['expired_at']),
+      features: (json['features'] != null)
+          ? List<String>.from(json['features'])
+          : <String>[],
     );
   }
 
@@ -43,13 +41,30 @@ class Subscription {
       'id': id,
       'pack_key': packKey,
       'licence': licence,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-      'consumed_at': consumedAt,
-      'expired_at': expiredAt,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+      'consumed_at': consumedAt?.toIso8601String(),
+      'expired_at': expiredAt?.toIso8601String(),
       'features': features,
     };
   }
+
+  static DateTime? _parseDate(dynamic value) {
+    if (value == null || value.toString().isEmpty) return null;
+    try {
+      return DateTime.parse(value.toString());
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool get isValid => expiredAt != null && expiredAt!.isAfter(DateTime.now());
+
+  String get expiredAtFormatted {
+    if (expiredAt == null) return "";
+    return DateFormat('dd-MM-yyyy').format(expiredAt!);
+  }
+
 }
 
 class PackSubscribeResponse {
@@ -70,11 +85,11 @@ class PackSubscribeResponse {
               id: 0,
               packKey: '',
               licence: '',
-              createdAt: '',
-              updatedAt: '',
-              consumedAt: '',
-              expiredAt: '',
-              features: [],
+              createdAt: null,
+              updatedAt: null,
+              consumedAt: null,
+              expiredAt: null,
+              features: const [],
             ),
     );
   }
@@ -85,4 +100,5 @@ class PackSubscribeResponse {
       'subscription': subscription.toJson(),
     };
   }
+
 }

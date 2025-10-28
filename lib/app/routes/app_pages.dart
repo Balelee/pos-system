@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-
+import 'package:pos/app/data/Middleware/licence_middleware.dart';
 import '../modules/configuration/bindings/configuration_binding.dart';
 import '../modules/configuration/views/configuration_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -34,55 +34,54 @@ class AppPages {
 
   static final routes = [
     GetPage(
-      name: _Paths.HOME,
-      page: () => const HomeView(),
-      binding: HomeBinding(),
-    ),
+        name: _Paths.HOME,
+        page: () => const HomeView(),
+        binding: HomeBinding(),
+        middlewares: [LicenceMiddleware()]),
     GetPage(
-      name: _Paths.LOGIN,
-      page: () => const LoginView(),
-      binding: LoginBinding(),
-    ),
+        name: _Paths.LOGIN,
+        page: () => const LoginView(),
+        binding: LoginBinding(),
+        middlewares: [LicenceMiddleware()]),
     GetPage(
-      name: _Paths.REGISTER,
-      page: () => const RegisterView(),
-      binding: RegisterBinding(),
-    ),
+        name: _Paths.REGISTER,
+        page: () => const RegisterView(),
+        binding: RegisterBinding(),
+        middlewares: [LicenceMiddleware()]),
     GetPage(
-      name: _Paths.LIST_CASHIER,
-      page: () => const ListCashierView(),
-      binding: ListCashierBinding(),
-    ),
+        name: _Paths.LIST_CASHIER,
+        page: () => const ListCashierView(),
+        binding: ListCashierBinding(),
+        middlewares: [LicenceMiddleware()]),
     GetPage(
-      name: _Paths.PRODUCT,
-      page: () => const ProductView(),
-      binding: ProductBinding(),
-    ),
+        name: _Paths.PRODUCT,
+        page: () => const ProductView(),
+        binding: ProductBinding(),
+        middlewares: [LicenceMiddleware()]),
     GetPage(
-      name: _Paths.SALE_CARD,
-      page: () => const SaleCardView(),
-      binding: SaleCardBinding(),
-    ),
+        name: _Paths.SALE_CARD,
+        page: () => const SaleCardView(),
+        binding: SaleCardBinding(),
+        middlewares: [LicenceMiddleware()]),
     GetPage(
-      name: _Paths.SALE_HISTORIQUE,
-      page: () => const SaleHistoriqueView(),
-      binding: SaleHistoriqueBinding(),
-    ),
+        name: _Paths.SALE_HISTORIQUE,
+        page: () => const SaleHistoriqueView(),
+        binding: SaleHistoriqueBinding(),
+        middlewares: [LicenceMiddleware()]),
     GetPage(
-      name: _Paths.PAIEMENT,
-      page: () => const PaiementView(),
-      binding: PaiementBinding(),
-    ),
+        name: _Paths.PAIEMENT,
+        page: () => const PaiementView(),
+        binding: PaiementBinding(),
+        middlewares: [LicenceMiddleware()]),
     GetPage(
-      name: _Paths.CONFIGURATION,
-      page: () => const ConfigurationView(),
-      binding: ConfigurationBinding(),
-    ),
+        name: _Paths.CONFIGURATION,
+        page: () => const ConfigurationView(),
+        binding: ConfigurationBinding(),
+        middlewares: [LicenceMiddleware()]),
     GetPage(
       name: _Paths.LICENCE,
       page: () => const LicenceView(),
       binding: LicenceBinding(),
     ),
-   
   ];
 }
