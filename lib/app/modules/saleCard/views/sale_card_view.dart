@@ -4,6 +4,7 @@ import 'package:pos/app/data/components/bouton/bouton.dart';
 import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/data/components/textField/textField.dart';
+import 'package:pos/app/data/enums/packey_feature.dart';
 import 'package:pos/app/models/sale.dart';
 import 'package:pos/app/widget/showDialog.dart';
 import 'package:pos/utils/toast.dart';
@@ -130,74 +131,107 @@ class SaleCardView extends GetView<SaleCardController> {
                 ),
               ],
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  if (controller.paymentMethods.isEmpty) {
-                    Toast.toast(
-                      title: Text("Erreur"),
-                      description: "Veuillez selection une methode de paiement",
-                      type: ToastificationType.error,
-                      style: ToastificationStyle.fillColored,
-                    );
-                    return;
-                  }
-                  if ((controller.selectedPayment.value == "Orange Money" ||
-                          controller.selectedPayment.value == "Moov Money") &&
-                      controller.phoneController.text.isEmpty) {
-                    Toast.toast(
-                      title: const Text("Attention"),
-                      description: "Veuillez entrer votre numéro de téléphone",
-                      type: ToastificationType.info,
-                      style: ToastificationStyle.fillColored,
-                    );
-                    return;
-                  }
+              Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (controller.paymentMethods.isEmpty) {
+                        Toast.toast(
+                          title: Text("Erreur"),
+                          description:
+                              "Veuillez selection une methode de paiement",
+                          type: ToastificationType.error,
+                          style: ToastificationStyle.fillColored,
+                        );
+                        return;
+                      }
+                      if ((controller.selectedPayment.value == "Orange Money" ||
+                              controller.selectedPayment.value ==
+                                  "Moov Money") &&
+                          controller.phoneController.text.isEmpty) {
+                        Toast.toast(
+                          title: const Text("Attention"),
+                          description:
+                              "Veuillez entrer votre numéro de téléphone",
+                          type: ToastificationType.info,
+                          style: ToastificationStyle.fillColored,
+                        );
+                        return;
+                      }
 
-                  Sale? sale = await controller.createSale();
-                  if (sale != null) {
-                    ShowDialog.showdialog(
-                      title: const Text(
-                        "Vente effectuée ✅",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Sale? sale = await controller.createSale();
+                      if (sale != null) {
+                        ShowDialog.showdialog(
+                          title: const Text(
+                            "Vente effectuée ✅",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          content: Text(
+                            "La vente a été effectuée via ${controller.selectedPayment.value}, voulez-vous imprimer le reçu ?",
+                          ),
+                          cancelButton: CustomButton(
+                            backgroundColor: Colors.red,
+                            text: "Quitter",
+                            onPressed: () {
+                              Get.back();
+                            },
+                          ),
+                          actionButton: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Stack(
+                              alignment: Alignment.centerRight,
+                              children: [
+                                CustomButton(
+                                  text: "Imprimer reçu",
+                                  onPressed: () async {
+                                    await controller.printService
+                                        .printSale(sale);
+                                    Get.back();
+                                  },
+                                ),
+                                if (!controller.homeController
+                                    .hasFeature(AppFeature.print))
+                                  Positioned(
+                                    right: 12,
+                                    child: Icon(
+                                      Icons.lock,
+                                      size: 20,
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: const Text(
+                      "Vendre",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      content: Text(
-                        "La vente a été effectuée via ${controller.selectedPayment.value}, voulez-vous imprimer le reçu ?",
-                      ),
-                      cancelButton: CustomButton(
-                        backgroundColor: Colors.red,
-                        text: "Quitter",
-                        onPressed: () {
-                          Get.back();
-                        },
-                      ),
-                      actionButton: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: CustomButton(
-                          text: "Imprimer reçu",
-                          onPressed: () async {
-                            await controller.printService.printSale(sale);
-                            Get.back();
-                          },
-                        ),
-                      ),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: const Text(
-                  "Vendre",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    ),
                   ),
-                ),
+                  if (!controller.homeController.hasFeature(AppFeature.vente))
+                    Positioned(
+                      right: 12,
+                      child: Icon(
+                        Icons.lock,
+                        size: 20,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
+                ],
               ),
             ],
           ),

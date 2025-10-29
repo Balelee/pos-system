@@ -27,7 +27,15 @@ class ProductView extends GetView<ProductController> {
                 children: [
                   if (controller.homeController.user?.status ==
                       UserStatus.admin)
-                    const Icon(Icons.grid_view_rounded, size: 28),
+                    GestureDetector(
+                      child: const Icon(
+                        Icons.grid_view_rounded,
+                        size: 28,
+                      ),
+                      onTap: () {
+                        Get.back();
+                      },
+                    ),
                   const Spacer(),
                   if (controller.homeController.user?.status ==
                       UserStatus.admin)
@@ -203,23 +211,9 @@ class ProductView extends GetView<ProductController> {
               child: Obx(() {
                 if (controller.articles.isEmpty) {
                   return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 20,
-                          height: 20,
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 3,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        ParagraphText(
-                          text: "Aucun article disponible",
-                          type: ParagraphType.bodyText2,
-                        ),
-                      ],
+                    child: ParagraphText(
+                      text: "Aucun article disponible",
+                      type: ParagraphType.bodyText2,
                     ),
                   );
                 } else {
@@ -385,7 +379,6 @@ class ProductView extends GetView<ProductController> {
                                           onTap: () {
                                             if (article.quantity! > 0) {
                                               controller.addToCart(article);
-                                              // Optionnel : décrémente le stock visible
                                               article.quantity =
                                                   article.quantity! - 1;
                                               controller.articles.refresh();

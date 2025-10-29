@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pos/app/data/components/bouton/bouton.dart';
 import 'package:pos/app/data/components/text/text.dart';
+import 'package:pos/app/data/enums/packey_feature.dart';
 import '../controllers/sale_historique_controller.dart';
 
 class SaleHistoriqueView extends GetView<SaleHistoriqueController> {
@@ -70,20 +71,36 @@ class SaleHistoriqueView extends GetView<SaleHistoriqueController> {
                           SizedBox(
                             height: 4,
                           ),
-                          SizedBox(
-                            width: Get.width / 3.5,
-                            height: 42,
-                            child: CustomButton(
-                              text: "Tirer reçu",
-                              fontSize: 12,
-                              onPressed: () async {
-                                try {
-                                  await controller.printService.printSale(sale);
-                                } catch (e) {
-                                  Get.snackbar("Erreur", e.toString());
-                                }
-                              },
-                            ),
+                          Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              SizedBox(
+                                width: Get.width / 3.5,
+                                height: 42,
+                                child: CustomButton(
+                                  text: "Tirer reçu",
+                                  fontSize: 12,
+                                  onPressed: () async {
+                                    try {
+                                      await controller.printService
+                                          .printSale(sale);
+                                    } catch (e) {
+                                      Get.snackbar("Erreur", e.toString());
+                                    }
+                                  },
+                                ),
+                              ),
+                              if (!controller.homeController
+                                  .hasFeature(AppFeature.print))
+                                Positioned(
+                                  right: 12,
+                                  child: Icon(
+                                    Icons.lock,
+                                    size: 20,
+                                    color: Colors.white.withOpacity(0.8),
+                                  ),
+                                ),
+                            ],
                           ),
                         ],
                       )

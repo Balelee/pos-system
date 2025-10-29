@@ -89,7 +89,7 @@ class LicenceView extends GetView<LicenceController> {
                           ..onTap = () async {
                             controller.startClipboardListener();
                             final url = Uri.parse(
-                                "http://${Env.host}:8000/welcome#pricing");
+                                "http://${Env.host}:8000/#pricing");
                             await launchUrl(url,
                                 mode: LaunchMode.externalApplication);
                           },

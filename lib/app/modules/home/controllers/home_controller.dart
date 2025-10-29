@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pos/app/data/database/model_repository/article_repository.dart';
 import 'package:pos/app/data/database/model_repository/sale_repository.dart';
 import 'package:pos/app/data/database/model_repository/user_repository.dart';
+import 'package:pos/app/data/enums/packey_feature.dart';
 import 'package:pos/app/models/article.dart';
 import 'package:pos/app/models/session.dart';
 import 'package:pos/app/models/user.dart';
@@ -25,13 +26,10 @@ class HomeController extends GetxController {
   final saleRepo = SaleRepository();
   RxDouble totalSales = 0.0.obs;
 
-  bool get isCassierAuthorized => licenceController.hasFeature('G_CAISSIER');
-  bool get isProductAuthorized => licenceController.hasFeature('G_PRODUIT');
-  bool get isConfigAuthorized =>
-      licenceController.hasFeature('G_PERSONNALISATION');
-  bool get isHistoVenteAuthorized =>
-      licenceController.hasFeature('V_HIST_VENTE');
-  bool get isFactureAuthorized => licenceController.hasFeature('G_FACTURE');
+ bool hasFeature(AppFeature feature) {
+    return licenceController.hasFeature(feature.code);
+  }
+
 
   @override
   void onInit() {

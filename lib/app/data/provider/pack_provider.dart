@@ -21,14 +21,12 @@ class PackProvider {
       headers: headers(),
       body: jsonEncode({"licence": licence}),
     );
-    print("dddddddddddddddddddddddddddddddddddddddddddd");
-    print(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final Map<String, dynamic> data = jsonDecode(response.body);
       return PackSubscribeResponse.fromJson(data);
     } else {
       final error = jsonDecode(response.body);
-       throw ApiException(error['message'] ??
+      throw ApiException(error['message'] ??
           'Erreur inconnue lors de la consommation de la licence');
     }
   }

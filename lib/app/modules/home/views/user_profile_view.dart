@@ -5,6 +5,7 @@ import 'package:pos/app/data/components/bouton/bouton.dart';
 import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/data/components/textField/textField.dart';
+import 'package:pos/app/data/enums/packey_feature.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/home/controllers/home_controller.dart';
 import 'package:pos/app/modules/home/views/session_view.dart';
@@ -162,15 +163,34 @@ class UserProfileView extends GetView<HomeController> {
                           text: "Sessions:",
                           type: ParagraphType.bodyText1,
                         ),
-                        SizedBox(
-                            width: Get.width * 0.5,
-                            child: CustomButton(
-                              backgroundColor: Colors.orange.shade200,
-                              text: "Voir les sessions",
-                              onPressed: () {
-                                Get.to(() => SessionView());
-                              },
-                            )),
+                        Stack(
+                          alignment: Alignment.centerRight,
+                          children: [
+                            AbsorbPointer(
+                              absorbing:
+                                  !controller.hasFeature(AppFeature.session),
+                              child: SizedBox(
+                                width: Get.width / 2,
+                                child: CustomButton(
+                                  backgroundColor: Colors.orange.shade200,
+                                  text: "Voir les sessions",
+                                  onPressed: () {
+                                    Get.to(() => SessionView());
+                                  },
+                                ),
+                              ),
+                            ),
+                            if (!controller.hasFeature(AppFeature.session))
+                              Positioned(
+                                right: 12,
+                                child: Icon(
+                                  Icons.lock,
+                                  size: 20,
+                                  color: Colors.white.withOpacity(0.8),
+                                ),
+                              ),
+                          ],
+                        )
                       ],
                     )
                   : SizedBox.shrink(),
@@ -198,13 +218,11 @@ class UserProfileView extends GetView<HomeController> {
                                   : Colors.red,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Obx(
-                              () => ParagraphText(
-                                text:
-                                    "${DateFormat('dd-MM-yyyy à HH:mm:ss').format(DateTime.parse(controller.licenceController.expirationDate.value.toString()))}",
-                                color: Colors.white,
-                                type: ParagraphType.bodyText2,
-                              ),
+                            child: ParagraphText(
+                              text:
+                                  "${DateFormat('dd-MM-yyyy à HH:mm:ss').format(DateTime.parse(controller.licenceController.expirationDate.value.toString()))}",
+                              color: Colors.white,
+                              type: ParagraphType.bodyText2,
                             ),
                           ),
                         ),
