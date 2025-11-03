@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:pos/app/data/components/image_cropper_helper.dart';
 import 'package:pos/app/data/database/model_repository/configuration_repository.dart';
 import 'package:pos/app/models/configuration.dart';
 import 'package:pos/utils/toast.dart';
@@ -10,16 +10,16 @@ import 'package:toastification/toastification.dart';
 
 class ConfigurationController extends GetxController {
   Rxn<File> imageFile = Rxn<File>();
+   final ImageCropperHelper _croppImagehelper = ImageCropperHelper();
   RxBool isLoading = false.obs;
   CompanyRepository companyRepository = CompanyRepository();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
-  Future<void> pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      imageFile.value = File(pickedFile.path);
+ Future<void> pickAndCropImage() async {
+    File? file = await _croppImagehelper.pickAndCropImage();
+    if (file != null) {
+      imageFile.value = file;
     }
   }
 

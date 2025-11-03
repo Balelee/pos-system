@@ -9,6 +9,7 @@ class Subscription {
   final DateTime? consumedAt;
   final DateTime? expiredAt;
   final List<String> features;
+  final Map<String, dynamic> featuresDetails;
 
   Subscription({
     required this.id,
@@ -19,6 +20,7 @@ class Subscription {
     required this.consumedAt,
     required this.expiredAt,
     required this.features,
+    required this.featuresDetails,
   });
 
   factory Subscription.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,9 @@ class Subscription {
       features: (json['features'] != null)
           ? List<String>.from(json['features'])
           : <String>[],
+      featuresDetails: (json['features_details'] != null)
+          ? Map<String, dynamic>.from(json['features_details'])
+          : <String, dynamic>{},
     );
   }
 
@@ -46,6 +51,7 @@ class Subscription {
       'consumed_at': consumedAt?.toIso8601String(),
       'expired_at': expiredAt?.toIso8601String(),
       'features': features,
+      'features_details': featuresDetails,
     };
   }
 
@@ -64,7 +70,6 @@ class Subscription {
     if (expiredAt == null) return "";
     return DateFormat('dd-MM-yyyy').format(expiredAt!);
   }
-
 }
 
 class PackSubscribeResponse {
@@ -90,6 +95,7 @@ class PackSubscribeResponse {
               consumedAt: null,
               expiredAt: null,
               features: const [],
+              featuresDetails: const {},
             ),
     );
   }
@@ -100,5 +106,4 @@ class PackSubscribeResponse {
       'subscription': subscription.toJson(),
     };
   }
-
 }

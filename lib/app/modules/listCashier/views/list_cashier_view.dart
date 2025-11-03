@@ -46,64 +46,80 @@ class ListCashierView extends GetView<HomeController> {
           separatorBuilder: (_, __) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final User cashier = cashiers[index];
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundColor: controller
-                    .avatarColors[index % controller.avatarColors.length],
-                child: Text(
-                  cashier.username[0].toUpperCase(),
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-              title: Text(
-                cashier.username,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: ParagraphText(
-                text: '${cashier.status?.label}',
-                type: ParagraphType.bodyText2,
-                color: Colors.green.shade400,
-              ),
-              trailing: IconButton(
-                icon: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                  size: 20,
-                ),
-                onPressed: () {
-                  ShowDialog.showdialog(
-                    title: ParagraphText(
-                      text: "Confirmation",
-                      type: ParagraphType.bodyText1,
+            return Container(
+              color: Colors.blue.withOpacity(0.08),
+              child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: controller
+                        .avatarColors[index % controller.avatarColors.length],
+                    child: Text(
+                      cashier.username[0].toUpperCase(),
+                      style: const TextStyle(color: Colors.white),
                     ),
-                    content: ParagraphText(
-                      text:
-                          "Voulez-vous vraiment supprimer ${cashier.username} ?",
-                      type: ParagraphType.bodyText2,
+                  ),
+                  title: Text(
+                    cashier.username,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
-                    cancelButton: CustomButton(
-                      backgroundColor: AppColor.bodyText2Color,
-                      text: "Annuler",
-                      onPressed: () {
-                        Get.back();
-                      },
-                    ),
-                    actionButton: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: CustomButton(
-                        backgroundColor: Colors.red,
-                        text: "Supprimer",
+                  ),
+                  subtitle: ParagraphText(
+                    text: '${cashier.status?.label}',
+                    type: ParagraphType.bodyText2,
+                    color: Colors.green.shade400,
+                  ),
+                  trailing: Container(
+                    width: Get.width / 4,
+                    height: 45,
+                    child: Obx(() {
+                      final cashierFromList = controller.userCashiers
+                          .firstWhere((c) => c.id == cashier.id);
+                      return CustomButton(
+                        fontSize: 12,
+                        backgroundColor: cashierFromList.isBlocked
+                            ? Colors.red
+                            : Colors.blue,
+                        text: cashierFromList.isBlocked ? "Bloqué" : "Actif",
                         onPressed: () {
-                          controller.deleteCashier(cashier.id!);
-                          Get.back();
+                          ShowDialog.showdialog(
+                            title: ParagraphText(
+                              text: "Confirmation",
+                              type: ParagraphType.bodyText1,
+                            ),
+                            content: ParagraphText(
+                              text: cashierFromList.isBlocked
+                                  ? "Voulez-vous vraiment activer ${cashierFromList.username} ?"
+                                  : "Voulez-vous vraiment bloquer ${cashierFromList.username} ?",
+                              type: ParagraphType.bodyText2,
+                            ),
+                            cancelButton: CustomButton(
+                              backgroundColor: AppColor.bodyText2Color,
+                              text: "Annuler",
+                              onPressed: () => Get.back(),
+                            ),
+                            actionButton: Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: CustomButton(
+                                backgroundColor: cashierFromList.isBlocked
+                                    ? Colors.blue
+                                    : Colors.red,
+                                text: cashierFromList.isBlocked
+                                    ? "Activer"
+                                    : "Bloquer",
+                                onPressed: () {
+                                  controller.toggleCashierStatus(
+                                    cashierFromList.id!,
+                                    !cashierFromList.isBlocked,
+                                  );
+                                  Get.back();
+                                },
+                              ),
+                            ),
+                          );
                         },
-                      ),
-                    ),
-                  );
-                },
-              ),
+                      );
+                    }),
+                  )),
             );
           },
         );

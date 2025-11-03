@@ -21,6 +21,8 @@ class PackProvider {
       headers: headers(),
       body: jsonEncode({"licence": licence}),
     );
+    print("ddddddddddddddddddddddddddddd");
+    print(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final Map<String, dynamic> data = jsonDecode(response.body);
       return PackSubscribeResponse.fromJson(data);

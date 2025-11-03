@@ -44,7 +44,7 @@ class ConfigurationView extends GetView<ConfigurationController> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        controller.pickImage();
+                        controller.pickAndCropImage();
                       },
                       child: CircleAvatar(
                         maxRadius: 40,

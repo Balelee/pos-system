@@ -86,7 +86,7 @@ class LicenceView extends GetView<LicenceController> {
                           decoration: TextDecoration.underline,
                         ),
                         recognizer: TapGestureRecognizer()
-                          ..onTap = () async {
+                          ..onTap = () async {      
                             controller.startClipboardListener();
                             final url = Uri.parse(
                                 "http://${Env.host}:8000/#pricing");

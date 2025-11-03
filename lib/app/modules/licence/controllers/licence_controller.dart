@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pos/app/data/database/model_repository/user_repository.dart';
+import 'package:pos/app/data/enums/packey_feature.dart';
 import 'package:pos/app/data/repository/licence_repository.dart';
 import 'package:pos/app/routes/app_pages.dart';
 
@@ -15,6 +16,9 @@ class LicenceController extends GetxController {
   final isLicenseValid = false.obs;
   final expirationDate = Rxn<DateTime>();
   Timer? _clipboardTimer;
+
+   String get packKey => _repository.getPackKey();
+  Map<String, dynamic> get featuresDetails => _repository.getFeaturesDetails();
 
   @override
   void onInit() {
@@ -125,5 +129,7 @@ class LicenceController extends GetxController {
   }
 
   List<String> get features => _repository.getFeatures();
-  bool hasFeature(String feature) => features.contains(feature);
+  bool hasFeature(AppFeature feature) {
+    return _repository.getFeatures().contains(feature.code);
+  }
 }

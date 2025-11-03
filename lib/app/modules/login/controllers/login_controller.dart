@@ -25,6 +25,16 @@ class LoginController extends GetxController {
         Get.toNamed(AppPages.HOME, arguments: user);
         usernameController.clear();
         passwordController.clear();
+      }
+    } on Exception catch (e) {
+      if (e.toString().contains("blocked")) {
+        Toast.toast(
+          title: const Text("Compte bloqué"),
+          description:
+              "Votre compte est actuellement bloqué. Contactez l'administrateur.",
+          type: ToastificationType.error,
+          style: ToastificationStyle.fillColored,
+        );
       } else {
         Toast.toast(
           title: const Text("Identifiants incorrects"),

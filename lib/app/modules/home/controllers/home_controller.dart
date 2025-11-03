@@ -26,8 +26,8 @@ class HomeController extends GetxController {
   final saleRepo = SaleRepository();
   RxDouble totalSales = 0.0.obs;
 
- bool hasFeature(AppFeature feature) {
-    return licenceController.hasFeature(feature.code);
+  bool hasFeature(AppFeature feature) {
+    return licenceController.hasFeature(feature);
   }
 
 
@@ -65,6 +65,38 @@ class HomeController extends GetxController {
     }
   }
 
+  Future<void> toggleCashierStatus(int cashierId, bool newStatus) async {
+    try {
+      final success = await userRepository.toggleCashierStatus(cashierId, newStatus);
+      if (success) {
+        await loadCashiers();
+         Toast.toast(
+          title: Text("Succès"),
+          description:  newStatus
+              ? "Le caissier a été bloqué avec succès."
+              : "Le caissier a été activé avec succès.",
+          type: ToastificationType.success,
+          style: ToastificationStyle.fillColored,
+        );
+      } else {
+         Toast.toast(
+          title: Text("Erreur"),
+          description:  "Impossible de changer le statut du caissier.",
+          type: ToastificationType.error,
+          style: ToastificationStyle.fillColored,
+        );
+      }
+    } catch (e) {
+       Toast.toast(
+        title: Text("Erreur"),
+        description: "Une erreur est survenue.",
+        type: ToastificationType.error,
+        style: ToastificationStyle.fillColored,
+      );
+    } 
+  }
+
+
   Future<void> loadTotalSales() async {
     try {
       double total = await saleRepo.getTotalSales();
@@ -75,15 +107,6 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> deleteCashier(int id) async {
-    try {
-      final cashier = userCashiers.firstWhere((c) => c.id == id);
-      await userRepository.deleteUser(cashier);
-      userCashiers.removeWhere((c) => c.id == id);
-    } catch (e) {
-      print("Erreur lors de la suppression du caissier : $e");
-    }
-  }
 
   Future<void> updateCashier(User user) async {
     try {
@@ -134,6 +157,8 @@ class HomeController extends GetxController {
       print("Erreur lors du chargement des sessions des caissiers : $e");
     }
   }
+
+ 
 
   Future<void> getAllArticles() async {
     final listArticle = await articleRepo.getAllArticles();

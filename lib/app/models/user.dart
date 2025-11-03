@@ -1,4 +1,3 @@
-
 enum UserStatus { admin, cashier }
 
 extension UserStatusExtension on UserStatus {
@@ -15,7 +14,7 @@ extension UserStatusExtension on UserStatus {
     if (status == null) return null;
     return UserStatus.values.firstWhere(
       (e) => e.name.toLowerCase() == status.toLowerCase(),
-      orElse: () => UserStatus.cashier, 
+      orElse: () => UserStatus.cashier,
     );
   }
 }
@@ -25,12 +24,14 @@ class User {
   final String username;
   final String password;
   final UserStatus? status;
+  final bool isBlocked;
 
   User({
     this.id,
     required this.username,
     required this.password,
     this.status,
+    this.isBlocked = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -39,6 +40,7 @@ class User {
       'username': username,
       'password': password,
       'status': status?.name,
+      'is_blocked': isBlocked ? 1 : 0,
     };
   }
 
@@ -48,6 +50,7 @@ class User {
       username: map['username'],
       password: map['password'],
       status: UserStatusExtension.fromString(map['status']),
+      isBlocked: (map['is_blocked'] ?? 0) == 1,
     );
   }
 }

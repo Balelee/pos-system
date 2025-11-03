@@ -10,10 +10,10 @@ class UserRepository {
     final db = await dbProvider.database;
     String hashedPassword = BCrypt.hashpw(user.password, BCrypt.gensalt());
     final userToInsert = User(
-      username: user.username,
-      password: hashedPassword,
-      status: user.status,
-    );
+        username: user.username,
+        password: hashedPassword,
+        status: user.status,
+        isBlocked: user.isBlocked);
     try {
       final id = await db.insert(
         'users',
@@ -21,11 +21,11 @@ class UserRepository {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
       return User(
-        id: id,
-        username: userToInsert.username,
-        password: userToInsert.password,
-        status: userToInsert.status,
-      );
+          id: id,
+          username: userToInsert.username,
+          password: userToInsert.password,
+          status: userToInsert.status,
+          isBlocked: user.isBlocked);
     } catch (e) {
       print("Erreur lors de l'insertion de l'utilisateur : $e");
       return null;
@@ -67,12 +67,20 @@ class UserRepository {
     return rowsAffected > 0;
   }
 
-  Future<int> deleteUser(User user) async {
+  Future<bool> toggleCashierStatus(int userId, bool newStatus) async {
     final db = await dbProvider.database;
-    if (user.id == null) {
-      throw Exception("L'utilisateur doit avoir un id pour être supprimé");
+    try {
+      final rows = await db.update(
+        'users',
+        {'is_blocked': newStatus ? 1 : 0},
+        where: 'id = ?',
+        whereArgs: [userId],
+      );
+      return rows > 0;
+    } catch (e) {
+      print("Erreur lors du changement de statut du caissier : $e");
+      return false;
     }
-    return await db.delete('users', where: 'id = ?', whereArgs: [user.id]);
   }
 
   Future<User?> loginUser(String username, String password) async {
@@ -84,6 +92,9 @@ class UserRepository {
     );
     if (results.isNotEmpty) {
       final user = User.fromMap(results.first);
+      if (user.isBlocked == true) {
+        throw Exception("blocked");
+      }
       if (BCrypt.checkpw(password, user.password)) {
         await db.update(
           'sessions',
@@ -98,7 +109,6 @@ class UserRepository {
             'logout_time': null,
           },
         );
-
         return user;
       }
     }

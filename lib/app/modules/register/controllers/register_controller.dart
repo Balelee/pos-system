@@ -21,6 +21,7 @@ class RegisterController extends GetxController {
         username: usernameController.text,
         password: passwordController.text,
         status: UserStatus.cashier,
+        isBlocked: false
       );
       if (newUser.username.isEmpty || newUser.password.isEmpty) {
         Toast.toast(

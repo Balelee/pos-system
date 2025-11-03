@@ -46,7 +46,7 @@ class EditProductView extends GetView<ProductController> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        controller.pickImage();
+                        controller.pickAndCropImage();
                       },
                       child: CircleAvatar(
                         maxRadius: 40,

@@ -7,7 +7,8 @@ class CreateUsersTable {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL,
         password TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'admin' CHECK(status IN ('admin', 'cashier'))
+        status TEXT NOT NULL DEFAULT 'admin' CHECK(status IN ('admin', 'cashier')),
+        is_blocked INTEGER NOT NULL DEFAULT 0 CHECK(is_blocked IN (0, 1))
       )
     ''');
 

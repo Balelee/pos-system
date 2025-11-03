@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:pos/app/data/components/image_cropper_helper.dart';
 import 'package:pos/app/data/database/model_repository/article_repository.dart';
 import 'package:pos/app/data/database/model_repository/category_repository.dart';
 import 'package:pos/app/data/database/model_repository/sale_repository.dart';
@@ -14,6 +14,7 @@ import 'package:toastification/toastification.dart';
 
 class ProductController extends GetxController {
   Rxn<File> imageFile = Rxn<File>();
+   final ImageCropperHelper _croppImagehelper = ImageCropperHelper();
   final HomeController homeController = Get.find<HomeController>();
   final nameController = TextEditingController();
   final priceController = TextEditingController();
@@ -107,13 +108,13 @@ class ProductController extends GetxController {
   double get totalPrice => articles.fold(
       0, (sum, a) => sum + ((a.unit_price ?? 0) * (a.quantity ?? 0)));
 
-  Future<void> pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      imageFile.value = File(pickedFile.path);
+   Future<void> pickAndCropImage() async {
+    File? file = await _croppImagehelper.pickAndCropImage();
+    if (file != null) {
+      imageFile.value = file;
     }
   }
+
 
   Future<void> getAllCategories() async {
     final allCategorie = await categorieRepo.getAllCategories();
