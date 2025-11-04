@@ -63,10 +63,15 @@ class ListCashierView extends GetView<HomeController> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  subtitle: ParagraphText(
-                    text: '${cashier.status?.label}',
-                    type: ParagraphType.bodyText2,
-                    color: Colors.green.shade400,
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ParagraphText(
+                        text: '${cashier.status?.label}',
+                        type: ParagraphType.bodyText2,
+                        color: Colors.green.shade400,
+                      ),
+                    ],
                   ),
                   trailing: Container(
                     width: Get.width / 4,

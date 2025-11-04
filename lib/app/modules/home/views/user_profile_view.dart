@@ -210,8 +210,8 @@ class UserProfileView extends GetView<HomeController> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ParagraphText(
-                              text: "Licence expiration:",
-                              type: ParagraphType.bodyText2,
+                              text: "Expiration:",
+                              type: ParagraphType.bodyText1,
                             ),
                             Obx(
                               () => Container(
@@ -241,7 +241,7 @@ class UserProfileView extends GetView<HomeController> {
                     height: 16,
                   ),
                   ParagraphText(
-                    text: "Le pack utilisé",
+                    text: "Le pack Actuel",
                     type: ParagraphType.bodyText1,
                   ),
                   SizedBox(

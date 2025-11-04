@@ -175,4 +175,21 @@ class UserRepository {
   ''');
     return result.isNotEmpty;
   }
+
+  Future<bool> resetCurrentUserPassword() async {
+    final currentUser = await getCurrentUser();
+    if (currentUser == null) return false;
+    final db = await dbProvider.database;
+    final hashedPassword =
+        BCrypt.hashpw(currentUser.username, BCrypt.gensalt());
+    final rows = await db.update(
+      'users',
+      {'password': hashedPassword},
+      where: 'id = ?',
+      whereArgs: [currentUser.id],
+    );
+
+    return rows > 0;
+  }
+
 }

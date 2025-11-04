@@ -10,4 +10,6 @@ enum AppFeature {
 
   final String code;
   const AppFeature(this.code);
+
+
 }

@@ -80,14 +80,18 @@ class SaleHistoriqueView extends GetView<SaleHistoriqueController> {
                                 child: CustomButton(
                                   text: "Tirer reçu",
                                   fontSize: 12,
-                                  onPressed: () async {
-                                    try {
-                                      await controller.printService
-                                          .printSale(sale);
-                                    } catch (e) {
-                                      Get.snackbar("Erreur", e.toString());
-                                    }
-                                  },
+                                  onPressed: controller.homeController
+                                          .hasFeature(AppFeature.print)
+                                      ? () async {
+                                          try {
+                                            await controller.printService
+                                                .printSale(sale, context);
+                                          } catch (e) {
+                                            Get.snackbar(
+                                                "Erreur", e.toString());
+                                          }
+                                        }
+                                      : null,
                                 ),
                               ),
                               if (!controller.homeController

@@ -66,42 +66,40 @@ class ProductView extends GetView<ProductController> {
                           ),
                         )),
                   const Spacer(),
-                  if (controller.homeController.user?.status ==
-                      UserStatus.cashier)
-                    GestureDetector(
-                      onTap: () {
-                        Get.toNamed(
-                          Routes.SALE_CARD,
-                          arguments: controller.cart,
-                        );
-                      },
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          const Icon(Icons.notifications_none, size: 28),
-                          Positioned(
-                              right: -2,
-                              top: -2,
-                              child: Obx(
-                                () => Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  constraints: const BoxConstraints(
-                                      minWidth: 18, minHeight: 18),
-                                  child: Text(
-                                    controller.cart.length.toString(),
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 10),
-                                    textAlign: TextAlign.center,
-                                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed(
+                        Routes.SALE_CARD,
+                        arguments: controller.cart,
+                      );
+                    },
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        const Icon(Icons.notifications_none, size: 28),
+                        Positioned(
+                            right: -2,
+                            top: -2,
+                            child: Obx(
+                              () => Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                              )),
-                        ],
-                      ),
+                                constraints: const BoxConstraints(
+                                    minWidth: 18, minHeight: 18),
+                                child: Text(
+                                  controller.cart.length.toString(),
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 10),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            )),
+                      ],
                     ),
+                  ),
                 ],
               ),
             ),
@@ -218,7 +216,7 @@ class ProductView extends GetView<ProductController> {
                   );
                 } else {
                   return GridView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(6),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -245,7 +243,7 @@ class ProductView extends GetView<ProductController> {
                                       article.image!.isNotEmpty
                                   ? Image.file(
                                       File(article.image!),
-                                      height: 100,
+                                      height: 80,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
                                     )
@@ -274,120 +272,117 @@ class ProductView extends GetView<ProductController> {
                                     fontWeight: FontWeight.bold, fontSize: 13),
                               ),
                             ),
-                            controller.homeController.user?.status ==
-                                    UserStatus.admin
-                                ? SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            IconButton(
-                                              icon: const Icon(
-                                                  Icons.remove_circle_outline),
-                                              onPressed: () =>
-                                                  controller.decrease(index),
-                                            ),
-                                            Text(
-                                              "${article.quantity}",
-                                            ),
-                                            IconButton(
-                                              icon: const Icon(
-                                                Icons.add_circle_outline,
-                                                color: Colors.blue,
-                                              ),
-                                              onPressed: () =>
-                                                  controller.increase(index),
-                                            ),
-                                          ],
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(
+                                            Icons.remove_circle_outline),
+                                        onPressed: () =>
+                                            controller.decrease(index),
+                                      ),
+                                      Text(
+                                        "${article.quantity}",
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.add_circle_outline,
+                                          color: Colors.blue,
                                         ),
-                                        IconButton(
-                                          onPressed: () {
-                                            ShowDialog.showdialog(
-                                              title: ParagraphText(
-                                                text: "Confirmation",
-                                                type: ParagraphType.bodyText1,
-                                              ),
-                                              content: ParagraphText(
-                                                text:
-                                                    "Voulez-vous vraiment supprimer ${article.label} ?",
-                                                type: ParagraphType.bodyText2,
-                                              ),
-                                              cancelButton: CustomButton(
-                                                backgroundColor:
-                                                    AppColor.bodyText2Color,
-                                                text: "Annuler",
-                                                onPressed: () {
-                                                  Get.back();
-                                                },
-                                              ),
-                                              actionButton: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 8.0),
-                                                child: CustomButton(
-                                                  backgroundColor: Colors.red,
-                                                  text: "Supprimer",
-                                                  onPressed: () {
-                                                    controller.deleteArticle(
-                                                        article.id!);
-
-                                                    Get.back();
-                                                  },
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          icon: Icon(
-                                            Icons.delete,
-                                            size: 20,
-                                            color: Colors.red,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                : Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0, vertical: 5),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        ParagraphText(
-                                          text: "Qté: ${article.quantity}",
+                                        onPressed: () =>
+                                            controller.increase(index),
+                                      ),
+                                    ],
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      ShowDialog.showdialog(
+                                        title: ParagraphText(
+                                          text: "Confirmation",
+                                          type: ParagraphType.bodyText1,
+                                        ),
+                                        content: ParagraphText(
+                                          text:
+                                              "Voulez-vous vraiment supprimer ${article.label} ?",
                                           type: ParagraphType.bodyText2,
                                         ),
-                                        GestureDetector(
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 16, vertical: 6),
-                                            decoration: BoxDecoration(
-                                              color: article.quantity! > 0
-                                                  ? Colors.blue[100]
-                                                  : Colors.grey[200],
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                            ),
-                                            child: Text(
-                                              "Ajouter",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          onTap: () {
-                                            if (article.quantity! > 0) {
-                                              controller.addToCart(article);
-                                              article.quantity =
-                                                  article.quantity! - 1;
-                                              controller.articles.refresh();
-                                            }
+                                        cancelButton: CustomButton(
+                                          backgroundColor:
+                                              AppColor.bodyText2Color,
+                                          text: "Annuler",
+                                          onPressed: () {
+                                            Get.back();
                                           },
-                                        )
-                                      ],
+                                        ),
+                                        actionButton: Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 8.0),
+                                          child: CustomButton(
+                                            backgroundColor: Colors.red,
+                                            text: "Supprimer",
+                                            onPressed: () {
+                                              controller
+                                                  .deleteArticle(article.id!);
+
+                                              Get.back();
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.delete,
+                                      size: 20,
+                                      color: Colors.red,
                                     ),
                                   )
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ParagraphText(
+                                    text: "Qté: ${article.quantity}",
+                                    type: ParagraphType.bodyText2,
+                                  ),
+                                  GestureDetector(
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: article.quantity! > 0
+                                            ? Colors.blue[100]
+                                            : Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      child: Text(
+                                        "Ajouter",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      if (article.quantity! > 0) {
+                                        controller.addToCart(article);
+                                        article.quantity =
+                                            article.quantity! - 1;
+                                        controller.articles.refresh();
+                                      }
+                                    },
+                                  )
+                                ],
+                              ),
+                            )
                           ],
                         ),
                       );

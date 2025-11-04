@@ -16,7 +16,6 @@ class LicenceController extends GetxController {
   final isLicenseValid = false.obs;
   final expirationDate = Rxn<DateTime>();
   Timer? _clipboardTimer;
-
    String get packKey => _repository.getPackKey();
   Map<String, dynamic> get featuresDetails => _repository.getFeaturesDetails();
 
@@ -92,6 +91,12 @@ class LicenceController extends GetxController {
       return;
     }
     try {
+       final trialAlreadyUsed = _repository.hasUsedTrialBefore();
+      if (trialAlreadyUsed) {
+        errorMessage.value =
+            "Vous avez déjà utilisé la version d'essai et ne pouvez pas la sélectionner à nouveau.";
+        return;
+      }
       isLoading.value = true;
       final subscription = await _repository.consumeLicence(key);
       expirationDate.value = subscription.expiredAt;

@@ -8,6 +8,9 @@ class LicenceRepository {
   Future<Subscription> consumeLicence(String key) async {
     final response = await _provider.consumeLicence(key);
     final sub = response.subscription;
+    if (sub.packKey == "yshop-trial") {
+      await _box.write('trial_used', true);
+    }
     await _box.write('pack_key', sub.packKey);
     await _box.write('licence_key', sub.licence);
     await _box.write('expired_at', sub.expiredAt?.toIso8601String());
@@ -26,12 +29,11 @@ class LicenceRepository {
     final expDate = DateTime.tryParse(exp);
     if (expDate == null) return null;
     return LicenceData(
-      licenceKey: key,
-      expirationDate: expDate,
-      isValid: expDate.isAfter(DateTime.now()),
-      packKey: packKey,
-      featuresDetails: featuresDetails
-    );
+        licenceKey: key,
+        expirationDate: expDate,
+        isValid: expDate.isAfter(DateTime.now()),
+        packKey: packKey,
+        featuresDetails: featuresDetails);
   }
 
   Future<void> clearLicence() async {
@@ -46,6 +48,10 @@ class LicenceRepository {
     final stored = _box.read('features_details');
     if (stored == null) return {};
     return Map<String, dynamic>.from(stored);
+  }
+
+  bool hasUsedTrialBefore() {
+    return _box.read('trial_used') ?? false;
   }
 }
 

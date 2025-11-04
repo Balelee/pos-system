@@ -28,15 +28,16 @@ class SaleCardController extends GetxController {
       (sum, item) => sum + (item.unit_price * item.quantity),
     );
     final sale = Sale(
-      user_id: homeController.user?.id,
-      date: DateTime.now(),
-      total: total,
-      paymentMethod: selectedPayment.value,
-      phone:
-          (selectedPayment == "Orange Money" || selectedPayment == "Moov Money")
-              ? phoneController.text
-              : null,
-    );
+        user_id: homeController.user?.id,
+        user: homeController.user,
+        date: DateTime.now(),
+        total: total,
+        paymentMethod: selectedPayment.value,
+        phone: (selectedPayment == "Orange Money" ||
+                selectedPayment == "Moov Money")
+            ? phoneController.text
+            : null,
+        soldArticles: List<Soldarticle>.from(soldarticle));
     final success = await saleRepo.applySale(sale, soldarticle);
     if (success) {
       soldarticle.clear();

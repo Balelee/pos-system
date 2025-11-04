@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
-import 'package:pos/app/data/Middleware/licence_middleware.dart';
+
+import '../data/Middleware/licence_middleware.dart';
 import '../modules/configuration/bindings/configuration_binding.dart';
 import '../modules/configuration/views/configuration_view.dart';
 import '../modules/home/bindings/home_binding.dart';

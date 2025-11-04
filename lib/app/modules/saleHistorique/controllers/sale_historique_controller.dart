@@ -7,8 +7,9 @@ import 'package:pos/app/modules/home/controllers/home_controller.dart';
 class SaleHistoriqueController extends GetxController {
   SaleRepository saleRepository = SaleRepository();
   PrintService printService = PrintService();
-  final  homeController = HomeController();
-
+  final homeController = HomeController();
+  var selectedDate = Rxn<DateTime>();
+  Rx<DateTime> focusedDay = DateTime.now().obs;
   var sales = <Sale>[].obs;
   var isLoading = false.obs;
   Future<void> loadSales() async {

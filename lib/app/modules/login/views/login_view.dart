@@ -76,7 +76,7 @@ class LoginView extends GetView<LoginController> {
                       fontSize: 14,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 15),
                   CustomButton(
                     isLoading: controller.isLoading.value,
                     text: "Connecter",

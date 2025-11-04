@@ -48,6 +48,7 @@ dependencies:
   get_storage: ^2.1.1
   url_launcher: ^6.3.1
   image_cropper: 6.0.0
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_test:

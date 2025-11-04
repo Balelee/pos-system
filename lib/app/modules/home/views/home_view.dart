@@ -10,6 +10,7 @@ import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/home/controllers/home_controller.dart';
 import 'package:pos/app/modules/home/views/user_profile_view.dart';
 import 'package:pos/app/modules/product/controllers/product_controller.dart';
+import 'package:pos/app/modules/saleHistorique/views/bilan_vente_view.dart';
 import 'package:pos/app/routes/app_pages.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -53,7 +54,7 @@ class HomeView extends GetView<HomeController> {
                   GestureDetector(
                     onTap: () {
                       if (controller.hasFeature(AppFeature.historiqueVente)) {
-                        Get.toNamed(Routes.SALE_HISTORIQUE);
+                        Get.to(BilanVentesView());
                       } else {
                         AccessDeniedDialog.show(featureName: "Ventes du jour");
                       }
@@ -65,7 +66,7 @@ class HomeView extends GetView<HomeController> {
                         icon: Icons.monetization_on,
                         label: "Ventes du jour",
                         value:
-                            "${controller.totalSales.value.toStringAsFixed(2)} FCFA",
+                            "${controller.totalSales.value.toStringAsFixed(0)} FCFA",
                         gradient: LinearGradient(
                           colors: [
                             Colors.green.shade400,

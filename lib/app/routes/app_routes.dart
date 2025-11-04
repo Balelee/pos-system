@@ -14,6 +14,7 @@ abstract class Routes {
   static const CONFIGURATION = _Paths.CONFIGURATION;
   static const LICENCE = _Paths.LICENCE;
   static const PACK = _Paths.PACK;
+  static const VIEW = _Paths.SALE_HISTORIQUE + _Paths.VIEW;
 }
 
 abstract class _Paths {
@@ -29,4 +30,5 @@ abstract class _Paths {
   static const CONFIGURATION = '/configuration';
   static const LICENCE = '/licence';
   static const PACK = '/pack';
+  static const VIEW = '/view';
 }

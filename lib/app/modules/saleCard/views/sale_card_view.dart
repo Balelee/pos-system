@@ -136,6 +136,10 @@ class SaleCardView extends GetView<SaleCardController> {
                 children: [
                   ElevatedButton(
                     onPressed: () async {
+                      if (!controller.homeController
+                          .hasFeature(AppFeature.vente)) {
+                        return null;
+                      }
                       if (controller.paymentMethods.isEmpty) {
                         Toast.toast(
                           title: Text("Erreur"),
@@ -159,7 +163,6 @@ class SaleCardView extends GetView<SaleCardController> {
                         );
                         return;
                       }
-
                       Sale? sale = await controller.createSale();
                       if (sale != null) {
                         ShowDialog.showdialog(
@@ -187,11 +190,19 @@ class SaleCardView extends GetView<SaleCardController> {
                               children: [
                                 CustomButton(
                                   text: "Imprimer reçu",
-                                  onPressed: () async {
-                                    await controller.printService
-                                        .printSale(sale);
-                                    Get.back();
-                                  },
+                                  onPressed: controller.homeController
+                                          .hasFeature(AppFeature.print)
+                                      ? () async {
+                                          try {
+                                            await controller.printService
+                                                .printSale(sale, context);
+                                          } catch (e) {
+                                            Get.snackbar(
+                                                "Erreur", e.toString());
+                                          }
+                                          Get.back();
+                                        }
+                                      : null,
                                 ),
                                 if (!controller.homeController
                                     .hasFeature(AppFeature.print))
@@ -207,6 +218,7 @@ class SaleCardView extends GetView<SaleCardController> {
                             ),
                           ),
                         );
+                        controller.homeController.loadTotalSales();
                       }
                     },
                     style: ElevatedButton.styleFrom(
