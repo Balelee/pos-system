@@ -73,27 +73,34 @@ class SaleCardController extends GetxController {
 
   void increase(int index) {
     final item = soldarticle[index];
-    item.quantity += 1;
-    final prodIndex =
-        productController.cart.indexWhere((p) => p.id == item.article?.id);
+    item.quantity++;
+    soldarticle[index] = item;
+    soldarticle.refresh();
+    final prodIndex = productController.cart.indexWhere(
+      (p) => p.id == item.article?.id,
+    );
     if (prodIndex != -1) {
       productController.cart[prodIndex].quantity = item.quantity;
+      productController.cart[prodIndex] = productController.cart[prodIndex];
       productController.cart.refresh();
     }
-    soldarticle.refresh();
   }
 
   void decrease(int index) {
     final item = soldarticle[index];
     if (item.quantity > 0) {
-      item.quantity -= 1;
-      final prodIndex =
-          productController.cart.indexWhere((p) => p.id == item.article?.id);
+      item.quantity--;
+      soldarticle[index] = item;
+      soldarticle.refresh();
+      final prodIndex = productController.cart.indexWhere(
+        (p) => p.id == item.article?.id,
+      );
       if (prodIndex != -1) {
         productController.cart[prodIndex].quantity = item.quantity;
+        productController.cart[prodIndex] = productController.cart[prodIndex];
         productController.cart.refresh();
       }
-      soldarticle.refresh();
     }
   }
+
 }

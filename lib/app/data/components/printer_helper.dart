@@ -21,16 +21,33 @@ class PrintService {
     return await showDialog<BluetoothDevice>(
       context: context,
       builder: (context) => SimpleDialog(
-        title: ParagraphText(
-          text: "Choisir une imprimante",
-          type: ParagraphType.bodyText1,
+        title: Column(
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: Colors.indigo.shade100,
+              child: Icon(Icons.print),
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            ParagraphText(
+              text: "Choisir une imprimante",
+              type: ParagraphType.bodyText1,
+            ),
+          ],
         ),
         children: devices.map((device) {
           return SimpleDialogOption(
             onPressed: () => Navigator.pop(context, device),
-            child: Text(
-              device.name ?? device.address ?? "",
-              style: TextStyle(fontWeight: FontWeight.bold),
+            child: Row(
+              children: [
+                Icon(Icons.bluetooth),
+                Text(
+                  device.name ?? device.address ?? "",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
           );
         }).toList(),
