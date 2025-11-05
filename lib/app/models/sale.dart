@@ -8,6 +8,7 @@ class Sale {
   final double total;
   final String? paymentMethod;
   final String? phone;
+  bool isReceived;
   User? user;
   List<Soldarticle> soldArticles;
 
@@ -18,6 +19,7 @@ class Sale {
     required this.total,
     this.paymentMethod,
     this.phone,
+    this.isReceived = false,
     this.soldArticles = const [],
     this.user,
   });
@@ -30,6 +32,7 @@ class Sale {
       'total': total,
       'payment_method': paymentMethod,
       'phone': phone,
+      'is_received': isReceived ? 1 : 0,
     };
   }
 
@@ -41,6 +44,7 @@ class Sale {
       total: (map['total'] ?? 0).toDouble(),
       paymentMethod: map['payment_method'],
       phone: map['phone'],
+      isReceived: (map['is_received'] ?? 0) == 1,
       user: map['user'] != null ? User.fromMap(map['user']) : null,
       soldArticles: [],
     );

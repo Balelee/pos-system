@@ -54,7 +54,7 @@ class HomeView extends GetView<HomeController> {
                   GestureDetector(
                     onTap: () {
                       if (controller.hasFeature(AppFeature.historiqueVente)) {
-                        Get.to(BilanVentesView());
+                        Get.to(() => BilanVentesView());
                       } else {
                         AccessDeniedDialog.show(featureName: "Ventes du jour");
                       }
@@ -64,7 +64,7 @@ class HomeView extends GetView<HomeController> {
                         isAuthorized:
                             controller.hasFeature(AppFeature.historiqueVente),
                         icon: Icons.monetization_on,
-                        label: "Ventes du jour",
+                        label: "Montant total",
                         value:
                             "${controller.totalSales.value.toStringAsFixed(0)} FCFA",
                         gradient: LinearGradient(

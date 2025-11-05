@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pos/app/data/components/image_cropper_helper.dart';
 import 'package:pos/app/data/database/model_repository/article_repository.dart';
 import 'package:pos/app/data/database/model_repository/category_repository.dart';
@@ -56,8 +57,16 @@ class ProductController extends GetxController {
   }
 
   void insertProduct() async {
+      String? savedImagePath;
+      if (imageFile.value != null) {
+      final appDir = await getApplicationDocumentsDirectory();
+      final fileName = imageFile.value!.path.split('/').last;
+      final savedImage =
+          await File(imageFile.value!.path).copy('${appDir.path}/$fileName');
+      savedImagePath = savedImage.path;
+    }
     final newArticle = Article(
-        image: imageFile.value?.path,
+        image: savedImagePath,
         label: nameController.text,
         unit_price: double.tryParse(priceController.text) ?? 0,
         category_id: selectedCategory.value?.id,

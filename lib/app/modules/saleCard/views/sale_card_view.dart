@@ -54,10 +54,32 @@ class SaleCardView extends GetView<SaleCardController> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "${item.article?.label} x${item.quantity}",
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                            Row(
+                              children: [
+                                Text(
+                                  "${item.article?.label} x${item.quantity}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                          Icons.remove_circle_outline),
+                                      onPressed: () =>
+                                          controller.decrease(index),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.add_circle_outline,
+                                        color: Colors.blue,
+                                      ),
+                                      onPressed: () =>
+                                          controller.increase(index),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                             Text(
                               "${(item.unit_price * item.quantity).toStringAsFixed(0)} CFA",
@@ -219,6 +241,7 @@ class SaleCardView extends GetView<SaleCardController> {
                           ),
                         );
                         controller.homeController.loadTotalSales();
+                        controller.salehistorique.loadSales();
                       }
                     },
                     style: ElevatedButton.styleFrom(

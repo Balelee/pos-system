@@ -7,6 +7,8 @@ import 'package:pos/app/modules/licence/controllers/licence_controller.dart';
 import 'package:toastification/toastification.dart';
 import 'app/routes/app_pages.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +19,14 @@ void main() async {
   runApp(
     ToastificationWrapper(
       child: GetMaterialApp(
+          localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('fr', 'FR'),
+        ],
         debugShowCheckedModeBanner: false,
         title: "POS System",
         initialRoute: AppPages.LICENCE,

@@ -86,4 +86,35 @@ class SaleRepository {
     }
   }
 
+
+  Future<bool> markSaleAsReceived(int saleId, {bool received = true}) async {
+    final db = await dbProvider.database;
+    try {
+      await db.update(
+        'sales',
+        {'is_received': received ? 1 : 0},
+        where: 'id = ?',
+        whereArgs: [saleId],
+      );
+      return true;
+    } catch (e) {
+      print("❌ Erreur lors de la mise à jour de isReceived : $e");
+      return false;
+    }
+  }
+
+  Future<bool> markAllSalesAsReceived(List<int> saleIds) async {
+    final db = await dbProvider.database;
+    try {
+      final ids = saleIds.join(',');
+      await db.rawUpdate(
+        'UPDATE sales SET is_received = 1 WHERE id IN ($ids)',
+      );
+      return true;
+    } catch (e) {
+      print("❌ Erreur lors de la mise à jour de toutes les ventes : $e");
+      return false;
+    }
+  }
+
 }

@@ -4,6 +4,7 @@ import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:pos/app/data/components/text/text.dart';
 import 'package:pos/app/data/database/model_repository/configuration_repository.dart';
 import 'package:pos/app/models/sale.dart';
 import 'package:image/image.dart' as img;
@@ -11,8 +12,6 @@ import 'package:image/image.dart' as img;
 class PrintService {
   final BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
   final configRepo = CompanyRepository();
-
-  /// Demande à l’utilisateur de choisir une imprimante parmi celles jumelées
   Future<BluetoothDevice?> choosePrinter(BuildContext context) async {
     List<BluetoothDevice> devices = await bluetooth.getBondedDevices();
     if (devices.isEmpty) {
@@ -22,11 +21,17 @@ class PrintService {
     return await showDialog<BluetoothDevice>(
       context: context,
       builder: (context) => SimpleDialog(
-        title: Text("Choisir une imprimante"),
+        title: ParagraphText(
+          text: "Choisir une imprimante",
+          type: ParagraphType.bodyText1,
+        ),
         children: devices.map((device) {
           return SimpleDialogOption(
             onPressed: () => Navigator.pop(context, device),
-            child: Text(device.name ?? device.address ?? ""),
+            child: Text(
+              device.name ?? device.address ?? "",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           );
         }).toList(),
       ),

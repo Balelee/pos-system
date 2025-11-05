@@ -25,17 +25,11 @@ class BilanVentesView extends GetView<SaleHistoriqueController> {
         if (controller.isLoading.value) {
           return Center(child: CircularProgressIndicator());
         }
-
         if (controller.sales.isEmpty) {
           return Center(child: Text("Aucune vente trouvée"));
         }
 
-        // Filtrer uniquement sur le jour sélectionné
-        final filteredSales = controller.sales.where((sale) {
-          final selected = controller.selectedDate.value;
-          return selected != null ? isSameDay(sale.date, selected) : true;
-        }).toList();
-
+        final filteredSales = controller.getFilteredSales();
         final totalAmount =
             filteredSales.fold<double>(0, (sum, sale) => sum + sale.total);
         final totalVentes = filteredSales.length;
@@ -45,13 +39,14 @@ class BilanVentesView extends GetView<SaleHistoriqueController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Calendrier
+              // TableCalendar
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade400),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Obx(() => TableCalendar(
+                      locale: 'fr_FR',
                       firstDay: DateTime(2020),
                       lastDay: DateTime(2100),
                       focusedDay: controller.focusedDay.value,
@@ -77,47 +72,52 @@ class BilanVentesView extends GetView<SaleHistoriqueController> {
                       ),
                     )),
               ),
-
-              SizedBox(height: 8),
-
-              // Bouton Réinitialiser la date
-              if (controller.selectedDate.value != null)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton.icon(
-                    onPressed: () {
-                      controller.selectedDate.value = null;
-                    },
-                    icon: Icon(Icons.refresh, color: Colors.indigo),
-                    label: Text(
-                      "Réinitialiser",
-                      style: TextStyle(color: Colors.indigo),
-                    ),
-                  ),
-                ),
-
               SizedBox(height: 16),
-
-              // Totaux
+              // Statistiques
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildStatCard(
                       "N° de Ventes", "$totalVentes", Colors.orange.shade300),
                   _buildStatCard(
-                      "Total de vente",
-                      "${totalAmount.toStringAsFixed(0)} CFA",
-                      Colors.indigo.shade300),
+                    "Total de vente",
+                    "${totalAmount.toStringAsFixed(0)} CFA",
+                    Colors.indigo.shade300,
+                  ),
                 ],
               ),
-
               SizedBox(height: 16),
-              Text(
-                "Détails des ventes",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              // Header détails
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Détails des ventes",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  // Bouton "Tous réçu"
+                  Container(
+                    decoration: BoxDecoration(
+                        color: controller
+                                .areAllFilteredSalesReceived(filteredSales)
+                            ? Colors.grey.shade400
+                            : Colors.orange.shade200,
+                        borderRadius: BorderRadius.circular(5)),
+                    width: Get.width / 3,
+                    height: 40,
+                    child: CustomButton(
+                      text: "Tous réçu",
+                      fontSize: 10,
+                      onPressed:
+                          controller.areAllFilteredSalesReceived(filteredSales)
+                              ? null
+                              : () => controller
+                                  .markAllFilteredSalesReceived(filteredSales),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 8),
-
               // Liste des ventes
               if (filteredSales.isEmpty)
                 Center(
@@ -151,17 +151,23 @@ class BilanVentesView extends GetView<SaleHistoriqueController> {
                         ),
                         subtitle: Text(
                           "Total: ${sale.total.toStringAsFixed(0)} CFA\n"
-                          "Date: ${DateFormat('dd-MM-yyyy HH:mm').format(sale.date!)}",
+                          "Date: ${DateFormat('dd-MM-yyyy HH:mm').format(sale.date!)}\n"
+                          "Moyen de paiement: ${sale.paymentMethod}",
                         ),
                         trailing: Container(
                           decoration: BoxDecoration(
-                              color: Colors.indigo.shade300,
+                              color: sale.isReceived
+                                  ? Colors.green.shade400
+                                  : Colors.indigo.shade300,
                               borderRadius: BorderRadius.circular(5)),
                           width: 70,
                           height: 40,
                           child: CustomButton(
-                            text: "Réçu",
+                            backgroundColor: sale.isReceived ? Colors.green.shade400 : Colors.indigo.shade300,
+                            text: sale.isReceived ? "Réçu" : "Non reçu",
                             fontSize: 10,
+                            onPressed: () =>
+                                controller.toggleSaleReceived(sale),
                           ),
                         ),
                       ),
@@ -175,7 +181,6 @@ class BilanVentesView extends GetView<SaleHistoriqueController> {
     );
   }
 
-  // Carte de statistique
   Widget _buildStatCard(String title, String value, Color color) {
     return Container(
       width: Get.width / 2.2,
@@ -192,11 +197,13 @@ class BilanVentesView extends GetView<SaleHistoriqueController> {
                     fontSize: 13,
                     color: Colors.white)),
             SizedBox(height: 4),
-            Text(value,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: Colors.white)),
+            Text(
+              value,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Colors.white),
+            ),
           ],
         ),
       ),

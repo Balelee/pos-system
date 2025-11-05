@@ -10,7 +10,8 @@ class CreateSalesAndSoldArticlesTables {
         date TEXT,
         total REAL NOT NULL,
         payment_method TEXT, 
-        phone TEXT 
+        phone TEXT,
+        is_received INTEGER DEFAULT 0
       )
     ''');
 
