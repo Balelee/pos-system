@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +10,7 @@ import 'package:pos/app/data/enums/packey_feature.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/home/controllers/home_controller.dart';
 import 'package:pos/app/modules/home/views/session_view.dart';
+import 'package:pos/app/routes/app_pages.dart';
 import 'package:pos/app/widget/showDialog.dart';
 
 class UserProfileView extends GetView<HomeController> {
@@ -304,6 +306,31 @@ class UserProfileView extends GetView<HomeController> {
                             );
                           },
                         ).toList(),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            text: "Souscrivez toujours à un nouveau pack, ",
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 12),
+                            children: [
+                              TextSpan(
+                                text: "En cliquant ici",
+                                style: const TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () async {
+                                    Get.toNamed(Routes.LICENCE);
+                                  },
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),

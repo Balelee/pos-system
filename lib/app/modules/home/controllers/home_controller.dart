@@ -23,13 +23,16 @@ class HomeController extends GetxController {
   final articleRepo = ArticleRepository();
   LoginController loginController = Get.put(LoginController());
   LicenceController licenceController = Get.put(LicenceController());
+  TextEditingController passwordController = TextEditingController();
   final saleRepo = SaleRepository();
   RxDouble totalSales = 0.0.obs;
+  RxBool obscureText = true.obs;
+  final isLoading = false.obs;
+  Rx<User?> selectedUser = Rx<User?>(null);
 
   bool hasFeature(AppFeature feature) {
     return licenceController.hasFeature(feature);
   }
-
 
   @override
   void onInit() {
@@ -67,35 +70,35 @@ class HomeController extends GetxController {
 
   Future<void> toggleCashierStatus(int cashierId, bool newStatus) async {
     try {
-      final success = await userRepository.toggleCashierStatus(cashierId, newStatus);
+      final success =
+          await userRepository.toggleCashierStatus(cashierId, newStatus);
       if (success) {
         await loadCashiers();
-         Toast.toast(
+        Toast.toast(
           title: Text("Succès"),
-          description:  newStatus
+          description: newStatus
               ? "Le caissier a été bloqué avec succès."
               : "Le caissier a été activé avec succès.",
           type: ToastificationType.success,
           style: ToastificationStyle.fillColored,
         );
       } else {
-         Toast.toast(
+        Toast.toast(
           title: Text("Erreur"),
-          description:  "Impossible de changer le statut du caissier.",
+          description: "Impossible de changer le statut du caissier.",
           type: ToastificationType.error,
           style: ToastificationStyle.fillColored,
         );
       }
     } catch (e) {
-       Toast.toast(
+      Toast.toast(
         title: Text("Erreur"),
         description: "Une erreur est survenue.",
         type: ToastificationType.error,
         style: ToastificationStyle.fillColored,
       );
-    } 
+    }
   }
-
 
   Future<void> loadTotalSales() async {
     try {
@@ -106,7 +109,6 @@ class HomeController extends GetxController {
       totalSales.value = 0.0;
     }
   }
-
 
   Future<void> updateCashier(User user) async {
     try {
@@ -158,7 +160,30 @@ class HomeController extends GetxController {
     }
   }
 
- 
+  Future<void> changePasswordForCashier() async {
+    final user = selectedUser.value;
+    if (user == null) return;
+    bool result = await userRepository.changeCashierPassword(
+      cashierId: user.id!,
+      newPassword: passwordController.text,
+    );
+    passwordController.clear();
+    if (result) {
+      Toast.toast(
+        title: Text("Succès"),
+        description: "Le mot de passe a été modifier",
+        type: ToastificationType.success,
+        style: ToastificationStyle.fillColored,
+      );
+    } else {
+      Toast.toast(
+        title: Text("Erreur"),
+        description: "Une erreur",
+        type: ToastificationType.error,
+        style: ToastificationStyle.fillColored,
+      );
+    }
+  }
 
   Future<void> getAllArticles() async {
     final listArticle = await articleRepo.getAllArticles();

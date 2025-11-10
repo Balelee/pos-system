@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pos/app/data/components/bouton/bouton.dart';
 import 'package:pos/app/data/components/color/appcolor.dart';
 import 'package:pos/app/data/components/text/text.dart';
+import 'package:pos/app/data/components/textField/textField.dart';
 import 'package:pos/app/models/user.dart';
 import 'package:pos/app/modules/home/controllers/home_controller.dart';
 import 'package:pos/app/modules/register/controllers/register_controller.dart';
@@ -66,10 +67,86 @@ class ListCashierView extends GetView<HomeController> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ParagraphText(
-                        text: '${cashier.status?.label}',
-                        type: ParagraphType.bodyText2,
-                        color: Colors.green.shade400,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ParagraphText(
+                            text: '${cashier.status?.label}',
+                            type: ParagraphType.bodyText2,
+                            color: Colors.green.shade400,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              controller.selectedUser.value = cashier;
+                              Get.bottomSheet(
+                                Obx(
+                                  () => Container(
+                                    width: Get.width,
+                                    height: Get.height / 3,
+                                    padding: EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(16)),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ParagraphText(
+                                          text: 'Modifier mot de passe',
+                                          type: ParagraphType.bodyText1,
+                                        ),
+                                        CustomTextField(
+                                          prefixIcon: Icons.lock,
+                                          label: "",
+                                          hintText: "Ex:OOOYREdg",
+                                          obscureText:
+                                              controller.obscureText.value,
+                                          hintStyle: TextStyle(
+                                            color: AppColor.bodyText2Color
+                                                .withOpacity(0.5),
+                                            fontSize: 14,
+                                          ),
+                                          suffixIcon:
+                                              controller.obscureText.value
+                                                  ? Icons.visibility_off
+                                                  : Icons.visibility,
+                                          onSuffixPressed: () {
+                                            controller.obscureText.value =
+                                                !controller.obscureText.value;
+                                          },
+                                          keyboardType: TextInputType.text,
+                                          controller:
+                                              controller.passwordController,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12.0),
+                                          child: CustomButton(
+                                            isLoading:
+                                                controller.isLoading.value,
+                                            text: "Modifier",
+                                            onPressed: () async {
+                                              await controller
+                                                  .changePasswordForCashier();
+                                                  Get.back();
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: ParagraphText(
+                              text: 'Modifier information',
+                              type: ParagraphType.bodyText2,
+                              color: Colors.red.shade400,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

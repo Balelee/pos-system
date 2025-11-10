@@ -192,4 +192,31 @@ class UserRepository {
     return rows > 0;
   }
 
+
+  Future<bool> changeCashierPassword({
+    required int cashierId,
+    required String newPassword,
+  }) async {
+    final db = await dbProvider.database;
+    final cashier = await db.query(
+      'users',
+      where: 'id = ? AND status = ?',
+      whereArgs: [cashierId, 'cashier'],
+    );
+    if (cashier.isEmpty) {
+      print('⚠️ Caissier introuvable');
+      return false;
+    }
+    final hashed = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+    await db.update(
+      'users',
+      {'password': hashed},
+      where: 'id = ?',
+      whereArgs: [cashierId],
+    );
+    print('✅ Mot de passe du caissier mis à jour avec succès');
+    return true;
+  }
+
+
 }
